@@ -1,6 +1,7 @@
 
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 // Sample fellowship data (expanded)
 const fellowships = [
@@ -83,17 +84,6 @@ const FellowshipDetail = () => {
             ← Back to Fellowship Directory
           </Link>
         </div>
-        
-        {/* Image moved to top, full width and square aspect ratio */}
-        <div className="mb-8 w-full">
-          <div className="aspect-square w-full">
-            <img 
-              src={fellowship.image} 
-              alt={fellowship.title} 
-              className="w-full h-full object-cover rounded-lg"
-            />
-          </div>
-        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-2/3">
@@ -119,6 +109,17 @@ const FellowshipDetail = () => {
           </div>
           
           <div className="w-full lg:w-1/3">
+            {/* Small image at the top of the right column */}
+            <div className="mb-6 w-full">
+              <div className="w-full h-48">
+                <img 
+                  src={fellowship.image} 
+                  alt={fellowship.title} 
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            </div>
+            
             <div className="bg-gray-900 p-6 rounded-lg sticky top-24">
               <h3 className="text-xl font-semibold mb-6 text-lom-yellow">Fellowship Details</h3>
               
