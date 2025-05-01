@@ -1,14 +1,11 @@
-
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 
 // Use the uploaded image
 const jigneshImage = "/lovable-uploads/d8de94aa-94dc-4e22-af49-0906817040fa.png";
-
 const Index = () => {
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 md:px-6 py-12">
         <section className="flex flex-col md:flex-row items-center justify-center mb-16">
           <div className="w-full md:w-1/2 text-center md:text-left mb-8 md:mb-0 order-2 md:order-1">
@@ -25,9 +22,9 @@ const Index = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-8">
-              <Link to="/fellowship" className="btn-primary">Fellowship</Link>
-              <Link to="/activities" className="btn-primary">10 Interesting Things</Link>
-              <Link to="/podcasts" className="btn-primary">Podcasts</Link>
+              
+              
+              
               <button className="btn-primary">Subscribe</button>
             </div>
             
@@ -43,11 +40,7 @@ const Index = () => {
           
           <div className="w-full md:w-1/2 order-1 md:order-2 flex justify-center md:justify-end">
             <div className="relative w-64 h-64 md:w-80 md:h-80">
-              <img 
-                src={jigneshImage} 
-                alt="Jignesh Talasila" 
-                className="rounded-full object-cover w-full h-full shadow-lg animate-scale-in"
-              />
+              <img src={jigneshImage} alt="Jignesh Talasila" className="rounded-full object-cover w-full h-full shadow-lg animate-scale-in" />
             </div>
           </div>
         </section>
@@ -87,8 +80,6 @@ const Index = () => {
           </div>
         </section>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Index;
