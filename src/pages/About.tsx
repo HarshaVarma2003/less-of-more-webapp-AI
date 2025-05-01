@@ -1,59 +1,44 @@
-
 import Layout from '../components/layout/Layout';
 
 // Use the uploaded image for Jignesh
 const jigneshImage = "/lovable-uploads/d8de94aa-94dc-4e22-af49-0906817040fa.png";
 
 // Sample team members data
-const teamMembers = [
-  {
-    name: "Rahul Sharma",
-    role: "Creative Director",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  },
-  {
-    name: "Priya Patel",
-    role: "Content Strategist",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  },
-  {
-    name: "Vikram Singh",
-    role: "Fellowship Coordinator",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  },
-  {
-    name: "Nisha Gupta",
-    role: "Podcast Producer",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  },
-  {
-    name: "Aditya Reddy",
-    role: "Community Manager",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  },
-  {
-    name: "Kiran Desai",
-    role: "Visual Designer",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  },
-  {
-    name: "Raj Malhotra",
-    role: "Research Associate",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=300&h=300"
-  }
-];
-
+const teamMembers = [{
+  name: "Rahul Sharma",
+  role: "Creative Director",
+  image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}, {
+  name: "Priya Patel",
+  role: "Content Strategist",
+  image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}, {
+  name: "Vikram Singh",
+  role: "Fellowship Coordinator",
+  image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}, {
+  name: "Nisha Gupta",
+  role: "Podcast Producer",
+  image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}, {
+  name: "Aditya Reddy",
+  role: "Community Manager",
+  image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}, {
+  name: "Kiran Desai",
+  role: "Visual Designer",
+  image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}, {
+  name: "Raj Malhotra",
+  role: "Research Associate",
+  image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=300&h=300"
+}];
 const About = () => {
-  return (
-    <Layout>
+  return <Layout>
       <div className="container mx-auto px-4 md:px-6 py-12">
         <div className="flex justify-center mb-12">
           <div className="w-56 h-56 md:w-64 md:h-64">
-            <img 
-              src={jigneshImage} 
-              alt="Jignesh Talasila" 
-              className="rounded-full object-cover w-full h-full shadow-lg"
-            />
+            <img src={jigneshImage} alt="Jignesh Talasila" className="rounded-full object-cover w-full h-full shadow-lg" />
           </div>
         </div>
 
@@ -94,7 +79,7 @@ const About = () => {
               <p className="text-xl md:text-2xl font-light italic leading-relaxed mb-4">
                 "Learn less and less about more and more, before learning more and more about less and less."
               </p>
-              <footer className="text-lom-yellow">- Jignesh Talasila</footer>
+              
             </blockquote>
           </div>
         </div>
@@ -105,35 +90,22 @@ const About = () => {
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-12">
-            {teamMembers.map((member, index) => (
-              <div key={index} className="flex flex-col items-center">
+            {teamMembers.map((member, index) => <div key={index} className="flex flex-col items-center">
                 <div className="w-24 h-24 md:w-32 md:h-32 mb-4">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
-                    className="rounded-full object-cover w-full h-full"
-                  />
+                  <img src={member.image} alt={member.name} className="rounded-full object-cover w-full h-full" />
                 </div>
                 <h3 className="font-medium text-center">{member.name}</h3>
                 <p className="text-sm text-gray-400 text-center">{member.role}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
           
           <div className="text-center">
-            <a 
-              href="https://forms.google.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-block px-8 py-3 bg-lom-yellow text-lom-dark font-medium rounded-md hover:bg-opacity-90 transition-colors"
-            >
+            <a href="https://forms.google.com" target="_blank" rel="noopener noreferrer" className="inline-block px-8 py-3 bg-lom-yellow text-lom-dark font-medium rounded-md hover:bg-opacity-90 transition-colors">
               Want to join our dynamic team?
             </a>
           </div>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default About;
