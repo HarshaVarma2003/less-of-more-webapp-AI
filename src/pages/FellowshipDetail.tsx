@@ -83,19 +83,22 @@ const FellowshipDetail = () => {
             ← Back to Fellowship Directory
           </Link>
         </div>
+        
+        {/* Image moved to top, full width and square aspect ratio */}
+        <div className="mb-8 w-full">
+          <div className="aspect-square w-full">
+            <img 
+              src={fellowship.image} 
+              alt={fellowship.title} 
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="w-full lg:w-2/3">
             <h1 className="text-3xl font-bold mb-2">{fellowship.title}</h1>
             <p className="text-xl text-gray-400 mb-6">Offered By: {fellowship.organization}</p>
-            
-            <div className="mb-8">
-              <img 
-                src={fellowship.image} 
-                alt={fellowship.title} 
-                className="w-full h-64 object-cover rounded-lg"
-              />
-            </div>
             
             <div className="space-y-8">
               <div>
