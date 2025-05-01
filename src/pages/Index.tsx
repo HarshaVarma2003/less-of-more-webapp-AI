@@ -58,7 +58,7 @@ const Index = () => {
             <Link to="/podcasts" className="group">
               <div className="bg-gray-900 p-6 rounded-lg card-hover">
                 <h3 className="text-xl font-semibold mb-3">HeadRock Show Podcasts</h3>
-                <p className="text-gray-400 mb-4">Big ideas made simple! Podcasts for the curious Telugu mind</p>
+                <p className="text-gray-400 mb-4">Big ideas made simple, Podcasts for the curious Telugu mind</p>
                 <div className="text-lom-yellow text-sm group-hover:underline">Listen Now →</div>
               </div>
             </Link>
