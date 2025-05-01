@@ -1,3 +1,7 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,6 +100,28 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-lom-dark text-lom-light font-poppins;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply relative text-lom-light hover:text-lom-yellow transition-colors duration-300 ease-in-out;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2 bg-transparent border border-lom-light text-lom-light hover:bg-lom-yellow hover:text-lom-dark hover:border-lom-yellow transition-all duration-300 rounded-md;
+  }
+
+  .social-icon {
+    @apply text-lom-light opacity-60 hover:opacity-100 hover:text-lom-yellow transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-105;
+  }
+
+  .yellow-highlight {
+    @apply text-lom-yellow;
   }
 }
