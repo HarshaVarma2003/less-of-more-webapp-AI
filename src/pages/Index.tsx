@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
 import Layout from '../components/layout/Layout';
@@ -8,7 +9,7 @@ const jigneshImage = "/lovable-uploads/d8de94aa-94dc-4e22-af49-0906817040fa.png"
 const Index = () => {
   return <Layout>
       <div className="container mx-auto px-4 md:px-6 py-12">
-        <section className="flex flex-col md:flex-row items-center justify-center mb-16">
+        <section className="flex flex-col md:flex-row items-center justify-center mb-16 mx-auto max-w-4xl">
           <div className="w-full md:w-1/2 text-center md:text-left mb-8 md:mb-0 order-2 md:order-1">
             <div className="space-y-4 mb-8">
               <p className="text-lom-yellow text-lg md:text-xl font-light">

@@ -18,10 +18,10 @@ const Footer = () => {
         
         <div className="flex flex-col items-center md:items-end">
           <div className="flex space-x-4 mb-4">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+            <a href="https://www.instagram.com/jigneshtalasila/" target="_blank" rel="noopener noreferrer" className="social-icon">
               <Instagram size={20} />
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+            <a href="https://www.youtube.com/@HeadRockShow" target="_blank" rel="noopener noreferrer" className="social-icon">
               <Youtube size={20} />
             </a>
           </div>
