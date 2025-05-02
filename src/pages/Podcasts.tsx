@@ -1,9 +1,17 @@
 
-import { Youtube } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 
-// Sample podcasts data
-const podcasts = [
+interface Podcast {
+  id: number;
+  title: string;
+  description: string;
+  thumbnail: string;
+  youtubeUrl: string;
+}
+
+// Fallback podcasts data in case localStorage is empty
+const fallbackPodcasts = [
   {
     id: 1,
     title: "Building a Growth Mindset",
@@ -20,77 +28,122 @@ const podcasts = [
   },
   {
     id: 3,
-    title: "Financial Intelligence for Young Professionals",
-    description: "Practical advice on building financial literacy and making sound investment decisions.",
+    title: "Mindfulness in Daily Life",
+    description: "Practical techniques to incorporate mindfulness into your everyday routine.",
     thumbnail: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&q=80&w=740",
     youtubeUrl: "https://youtube.com/watch?v=videoID3"
   },
   {
     id: 4,
-    title: "Navigating Career Transitions",
-    description: "Strategies for successfully pivoting careers and embracing new opportunities.",
+    title: "Financial Independence",
+    description: "Steps to achieve financial freedom and security in uncertain times.",
     thumbnail: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=740",
     youtubeUrl: "https://youtube.com/watch?v=videoID4"
-  },
-  {
-    id: 5,
-    title: "Mindfulness in Daily Life",
-    description: "Incorporating mindfulness practices for improved focus, productivity, and well-being.",
-    thumbnail: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID5"
-  },
-  {
-    id: 6,
-    title: "The Future of Work",
-    description: "Exploring emerging trends and preparing for the changing landscape of work.",
-    thumbnail: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID6"
-  },
+  }
 ];
 
 const Podcasts = () => {
+  const [podcasts, setPodcasts] = useState<Podcast[]>([]);
+  const [selectedPodcast, setSelectedPodcast] = useState<Podcast | null>(null);
+
+  // Load podcasts from localStorage when component mounts
+  useEffect(() => {
+    const savedPodcasts = localStorage.getItem('lom_podcasts');
+    if (savedPodcasts) {
+      setPodcasts(JSON.parse(savedPodcasts));
+    } else {
+      setPodcasts(fallbackPodcasts);
+    }
+  }, []);
+
+  const formatYouTubeEmbedUrl = (url: string) => {
+    // Transform YouTube watch URLs into embed URLs
+    try {
+      if (url.includes('youtube.com/watch')) {
+        const videoId = new URL(url).searchParams.get('v');
+        return `https://www.youtube.com/embed/${videoId}`;
+      } else if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1].split('?')[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+      // If URL is already an embed URL or cannot be transformed, return as is
+      return url;
+    } catch (e) {
+      // In case of invalid URL, return original
+      return url;
+    }
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 md:px-6 py-12">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            HeadRock Show <span className="text-lom-yellow">Podcasts</span>
+            <span className="text-lom-yellow">Podcast</span> Series
           </h1>
           <p className="text-lg text-gray-400">
-            Thought-provoking conversations that inspire action and growth.
+            Listen to our insightful discussions about personal growth, mindfulness, and living intentionally.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {podcasts.map((podcast) => (
-            <a 
-              key={podcast.id} 
-              href={podcast.youtubeUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block"
-            >
-              <div className="bg-gray-900 rounded-lg overflow-hidden card-hover">
-                <div className="relative">
-                  <img 
-                    src={podcast.thumbnail} 
-                    alt={podcast.title} 
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-50 transition-all">
-                    <div className="bg-lom-yellow text-lom-dark h-12 w-12 rounded-full flex items-center justify-center">
-                      <Youtube size={24} />
-                    </div>
+            <div key={podcast.id} className="bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+              <div className="relative cursor-pointer" onClick={() => setSelectedPodcast(podcast)}>
+                <img 
+                  src={podcast.thumbnail} 
+                  alt={podcast.title} 
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-lom-yellow flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-lom-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 line-clamp-1">{podcast.title}</h3>
-                  <p className="text-gray-400 text-sm line-clamp-2">{podcast.description}</p>
-                </div>
               </div>
-            </a>
+              
+              <div className="p-5">
+                <h3 className="text-xl font-bold mb-2">{podcast.title}</h3>
+                <p className="text-gray-400">{podcast.description}</p>
+              </div>
+            </div>
           ))}
         </div>
+
+        {/* Podcast Modal */}
+        {selectedPodcast && (
+          <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4" onClick={() => setSelectedPodcast(null)}>
+            <div 
+              className="bg-gray-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 flex justify-between items-center border-b border-gray-800">
+                <h2 className="text-xl font-bold">{selectedPodcast.title}</h2>
+                <button onClick={() => setSelectedPodcast(null)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="aspect-video">
+                <iframe 
+                  src={formatYouTubeEmbedUrl(selectedPodcast.youtubeUrl)} 
+                  className="w-full h-full" 
+                  title={selectedPodcast.title}
+                  allowFullScreen
+                ></iframe>
+              </div>
+              
+              <div className="p-5">
+                <p className="text-gray-300">{selectedPodcast.description}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

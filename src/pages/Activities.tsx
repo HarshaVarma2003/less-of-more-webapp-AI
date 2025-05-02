@@ -1,9 +1,16 @@
 
 import Layout from '../components/layout/Layout';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-// Sample activities data
-const activities = [
+interface Activity {
+  id: number;
+  title: string;
+  image: string;
+  url: string;
+}
+
+// Sample fallback activities data in case localStorage is empty
+const fallbackActivities = [
   {
     id: 1,
     title: "Morning Meditation",
@@ -43,9 +50,20 @@ const activities = [
 ];
 
 const Activities = () => {
-  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
-  const openActivity = (activity) => {
+  // Load activities from localStorage when component mounts
+  useEffect(() => {
+    const savedActivities = localStorage.getItem('lom_activities');
+    if (savedActivities) {
+      setActivities(JSON.parse(savedActivities));
+    } else {
+      setActivities(fallbackActivities);
+    }
+  }, []);
+
+  const openActivity = (activity: Activity) => {
     setSelectedActivity(activity);
   };
 

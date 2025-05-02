@@ -1,153 +1,226 @@
 
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
 
-// Sample fellowship data (expanded)
-const fellowships = [
-  {
-    id: 1,
-    title: "Digital Marketing Fellowship",
-    organization: "DigiLearn Academy",
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹25,000/month",
-    duration: "12 months",
-    location: "Mumbai, Delhi, Bangalore",
-    about: "This fellowship is designed to provide hands-on experience in digital marketing strategies. Fellows will work with industry experts to develop and implement marketing campaigns across various digital platforms.",
-    responsibilities: "Fellows will manage social media accounts, develop content strategies, analyze campaign performance data, and collaborate with creative teams to produce engaging content for target audiences.",
-    eligibility: "Bachelor's degree in Marketing, Communications, or related field. Proficiency in digital marketing tools and social media platforms. Good analytical and creative skills.",
-    website: "https://example.com/digilearn"
-  },
-  {
-    id: 2,
-    title: "Data Science Fellowship",
-    organization: "TechMinds Institute",
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹30,000/month",
-    duration: "24 months",
-    location: "Pune, Hyderabad, Chennai",
-    about: "A comprehensive data science program where fellows get to work on real-world projects using advanced analytics and machine learning techniques. The program focuses on developing both technical and business acumen.",
-    responsibilities: "Fellows will analyze large datasets, develop predictive models, create data visualization dashboards, and present insights to stakeholders to drive business decisions.",
-    eligibility: "Master's degree in Statistics, Computer Science, or related quantitative field. Experience with Python, R, and SQL. Strong mathematical and statistical knowledge.",
-    website: "https://example.com/techminds"
-  },
-  {
-    id: 3,
-    title: "Content Creation Fellowship",
-    organization: "Creative Hub",
-    image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹20,000/month",
-    duration: "6 months",
-    location: "Remote, Flexible",
-    about: "This fellowship focuses on developing skills in creating engaging content across different formats including writing, video, and audio. Fellows will learn modern content strategies that drive audience engagement.",
-    responsibilities: "Fellows will produce written articles, script and shoot video content, record and edit podcast episodes, and manage content distribution across multiple platforms.",
-    eligibility: "Background in journalism, communications, or media production. Portfolio demonstrating creative work. Familiarity with content management systems and basic editing tools.",
-    website: "https://example.com/creativehub"
-  },
-  {
-    id: 4,
-    title: "Business Analytics Fellowship",
-    organization: "Business Insights Co.",
-    image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹35,000/month",
-    duration: "18 months",
-    location: "Gurgaon, Bangalore, Hyderabad",
-    about: "This fellowship provides intensive training and experience in business analytics, helping fellows translate data into actionable business insights. Fellows work directly with senior analysts on high-impact projects.",
-    responsibilities: "Fellows will conduct market research, develop financial models, perform competitor analysis, and create executive presentations with strategic recommendations.",
-    eligibility: "MBA or equivalent business degree with strong analytical focus. Proficiency in Excel, PowerBI or Tableau. Experience with business case analysis.",
-    website: "https://example.com/businessinsights"
-  }
-];
+interface Fellowship {
+  id: number;
+  title: string;
+  organization: string;
+  about: string;
+  responsibilities: string;
+  eligibility: string;
+  image: string;
+  stipend: string;
+  duration: string;
+  location: string;
+  website: string;
+}
+
+// Fallback fellowship data in case localStorage is empty or fellowship not found
+const fallbackFellowship = {
+  id: 1,
+  title: "Digital Marketing Fellowship",
+  organization: "DigiLearn Academy",
+  about: "A comprehensive fellowship program focused on digital marketing strategies and implementation.",
+  responsibilities: "Create marketing campaigns, analyze data, develop social media strategies.",
+  eligibility: "Bachelor's degree in Marketing or related field. Experience with digital tools.",
+  image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
+  stipend: "₹25,000/month",
+  duration: "12 months",
+  location: "Remote",
+  website: "https://digilearn-academy.example.com"
+};
 
 const FellowshipDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const fellowship = fellowships.find(f => f.id === Number(id));
+  const [fellowship, setFellowship] = useState<Fellowship | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!fellowship) {
+  useEffect(() => {
+    const fetchFellowship = () => {
+      setLoading(true);
+      
+      try {
+        const savedFellowships = localStorage.getItem('lom_fellowships');
+        if (savedFellowships) {
+          const parsedFellowships: Fellowship[] = JSON.parse(savedFellowships);
+          const foundFellowship = parsedFellowships.find(f => f.id === Number(id));
+          
+          if (foundFellowship) {
+            setFellowship(foundFellowship);
+          } else {
+            setNotFound(true);
+          }
+        } else {
+          // If no fellowships in localStorage, check if the id matches our fallback
+          if (Number(id) === fallbackFellowship.id) {
+            setFellowship(fallbackFellowship);
+          } else {
+            setNotFound(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading fellowship data:", error);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchFellowship();
+  }, [id]);
+
+  if (loading) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h2 className="text-2xl font-bold mb-4">Fellowship not found</h2>
-          <Link to="/fellowship" className="text-lom-yellow hover:underline">
-            Return to Fellowship Directory
+        <div className="container mx-auto px-4 py-12 flex justify-center">
+          <div className="animate-pulse space-y-4 max-w-4xl w-full">
+            <div className="h-8 bg-gray-800 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+            <div className="h-64 bg-gray-800 rounded"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-800 rounded"></div>
+              <div className="h-4 bg-gray-800 rounded"></div>
+              <div className="h-4 bg-gray-800 rounded w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h1 className="text-3xl font-bold mb-4">Fellowship Not Found</h1>
+          <p className="text-gray-400 mb-6">
+            The fellowship you're looking for doesn't exist or has been removed.
+          </p>
+          <Link 
+            to="/fellowship" 
+            className="inline-block px-6 py-3 bg-lom-yellow text-lom-dark font-medium rounded-md hover:bg-opacity-90 transition-colors"
+          >
+            Back to Fellowships
           </Link>
         </div>
       </Layout>
     );
   }
 
+  if (!fellowship) return null;
+
   return (
     <Layout>
       <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="mb-8">
-          <Link to="/fellowship" className="text-lom-yellow hover:underline flex items-center">
-            ← Back to Fellowship Directory
-          </Link>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="w-full lg:w-2/3">
-            <h1 className="text-3xl font-bold mb-2">{fellowship.title}</h1>
-            <p className="text-xl text-gray-400 mb-6">Offered By: {fellowship.organization}</p>
-            
-            <div className="space-y-8">
-              <div>
-                <h2 className="text-xl font-semibold mb-3 text-lom-yellow">What is it about?</h2>
-                <p className="text-gray-300">{fellowship.about}</p>
-              </div>
-              
-              <div>
-                <h2 className="text-xl font-semibold mb-3 text-lom-yellow">What will the fellow do?</h2>
-                <p className="text-gray-300">{fellowship.responsibilities}</p>
-              </div>
-              
-              <div>
-                <h2 className="text-xl font-semibold mb-3 text-lom-yellow">Eligibility</h2>
-                <p className="text-gray-300">{fellowship.eligibility}</p>
-              </div>
-            </div>
+        <div className="max-w-4xl mx-auto">
+          {/* Breadcrumbs navigation */}
+          <div className="flex items-center mb-6 text-sm">
+            <Link to="/" className="text-gray-500 hover:text-gray-300">Home</Link>
+            <span className="mx-2 text-gray-600">/</span>
+            <Link to="/fellowship" className="text-gray-500 hover:text-gray-300">Fellowships</Link>
+            <span className="mx-2 text-gray-600">/</span>
+            <span className="text-gray-400">{fellowship.title}</span>
           </div>
           
-          <div className="w-full lg:w-1/3">
-            {/* Small image at the top of the right column */}
-            <div className="mb-6 w-full">
-              <div className="w-full h-48">
-                <img 
-                  src={fellowship.image} 
-                  alt={fellowship.title} 
-                  className="w-full h-full object-cover rounded-lg"
-                />
+          {/* Fellowship Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">
+              {fellowship.title}
+            </h1>
+            <p className="text-xl text-gray-300">
+              Offered by <span className="text-lom-yellow">{fellowship.organization}</span>
+            </p>
+          </div>
+
+          {/* Fellowship Image */}
+          <div className="relative w-full aspect-video mb-8 rounded-lg overflow-hidden">
+            <img 
+              src={fellowship.image} 
+              alt={fellowship.title} 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          
+          {/* Fellowship Details */}
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2 space-y-8">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">What is it about?</h2>
+                <p className="text-gray-300">
+                  {fellowship.about}
+                </p>
+              </div>
+              
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">What will the fellow do?</h2>
+                <p className="text-gray-300">
+                  {fellowship.responsibilities}
+                </p>
+              </div>
+              
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Eligibility</h2>
+                <p className="text-gray-300">
+                  {fellowship.eligibility}
+                </p>
               </div>
             </div>
             
-            <div className="bg-gray-900 p-6 rounded-lg sticky top-24">
-              <h3 className="text-xl font-semibold mb-6 text-lom-yellow">Fellowship Details</h3>
+            <div className="space-y-6">
+              <div className="bg-gray-900 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-4">Fellowship Details</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <span className="block text-sm text-gray-500">Duration</span>
+                    <span className="font-medium">{fellowship.duration}</span>
+                  </div>
+                  
+                  <div>
+                    <span className="block text-sm text-gray-500">Stipend</span>
+                    <span className="font-medium">{fellowship.stipend}</span>
+                  </div>
+                  
+                  <div>
+                    <span className="block text-sm text-gray-500">Location</span>
+                    <span className="font-medium">{fellowship.location}</span>
+                  </div>
+                  
+                  <div className="pt-2">
+                    <a 
+                      href={fellowship.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full bg-lom-yellow text-lom-dark text-center font-medium py-3 rounded-md hover:bg-opacity-90 transition-colors"
+                    >
+                      Visit Website
+                    </a>
+                  </div>
+                </div>
+              </div>
               
-              <div className="space-y-4">
-                <div>
-                  <p className="text-gray-400">Duration</p>
-                  <p className="font-medium">{fellowship.duration}</p>
-                </div>
-                
-                <div>
-                  <p className="text-gray-400">Stipend</p>
-                  <p className="font-medium">{fellowship.stipend}</p>
-                </div>
-                
-                <div>
-                  <p className="text-gray-400">Location</p>
-                  <p className="font-medium">{fellowship.location}</p>
-                </div>
-                
-                <div className="pt-4">
-                  <a 
-                    href={fellowship.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="block w-full py-3 bg-lom-yellow text-lom-dark font-medium text-center rounded-md hover:bg-opacity-90 transition-colors"
-                  >
-                    Visit Website
-                  </a>
+              <div className="bg-gray-900 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-4">Share</h3>
+                <div className="flex space-x-4">
+                  {/* Social sharing buttons */}
+                  <button className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+                    </svg>
+                  </button>
+                  <button className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                  </button>
+                  <button className="p-3 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
