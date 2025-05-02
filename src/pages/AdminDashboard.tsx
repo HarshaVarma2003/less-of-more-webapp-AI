@@ -14,7 +14,7 @@ const TABS = {
   PODCASTS: 'podcasts',
 };
 
-// Extended fellowship data with additional fields
+// Initial data setup (will be overridden by localStorage if available)
 const initialFellowships = [
   {
     id: 1,
@@ -88,10 +88,34 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // State for content
-  const [fellowships, setFellowships] = useState(initialFellowships);
-  const [activities, setActivities] = useState(initialActivities);
-  const [podcasts, setPodcasts] = useState(initialPodcasts);
+  // State for content with localStorage persistence
+  const [fellowships, setFellowships] = useState(() => {
+    const saved = localStorage.getItem('lom_fellowships');
+    return saved ? JSON.parse(saved) : initialFellowships;
+  });
+  
+  const [activities, setActivities] = useState(() => {
+    const saved = localStorage.getItem('lom_activities');
+    return saved ? JSON.parse(saved) : initialActivities;
+  });
+  
+  const [podcasts, setPodcasts] = useState(() => {
+    const saved = localStorage.getItem('lom_podcasts');
+    return saved ? JSON.parse(saved) : initialPodcasts;
+  });
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    localStorage.setItem('lom_fellowships', JSON.stringify(fellowships));
+  }, [fellowships]);
+
+  useEffect(() => {
+    localStorage.setItem('lom_activities', JSON.stringify(activities));
+  }, [activities]);
+
+  useEffect(() => {
+    localStorage.setItem('lom_podcasts', JSON.stringify(podcasts));
+  }, [podcasts]);
 
   // State for modals
   const [editingFellowship, setEditingFellowship] = useState<any>(null);
