@@ -1,6 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import EditFellowshipModal from '@/components/modals/EditFellowshipModal';
+import EditActivityModal from '@/components/modals/EditActivityModal';
+import EditPodcastModal from '@/components/modals/EditPodcastModal';
+import { useToast } from "@/components/ui/use-toast";
 
 // Admin dashboard tabs
 const TABS = {
@@ -9,9 +15,74 @@ const TABS = {
   PODCASTS: 'podcasts',
 };
 
+// Sample fellowship data
+const initialFellowships = [
+  {
+    id: 1,
+    title: "Digital Marketing Fellowship",
+    organization: "DigiLearn Academy",
+    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
+    stipend: "₹25,000/month",
+    duration: "12 months",
+  },
+  {
+    id: 2,
+    title: "Data Science Fellowship",
+    organization: "TechMinds Institute",
+    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
+    stipend: "₹30,000/month",
+    duration: "24 months",
+  },
+];
+
+// Sample activities data
+const initialActivities = [
+  {
+    id: 1,
+    title: "Morning Meditation",
+    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
+    url: "https://example.com/meditation"
+  },
+  {
+    id: 2,
+    title: "Book Club Discussions",
+    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
+    url: "https://example.com/bookclub"
+  },
+];
+
+// Sample podcasts data
+const initialPodcasts = [
+  {
+    id: 1,
+    title: "Building a Growth Mindset",
+    description: "Exploring strategies to develop a growth mindset for personal and professional development.",
+    thumbnail: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
+    youtubeUrl: "https://youtube.com/watch?v=videoID1"
+  },
+  {
+    id: 2,
+    title: "The Art of Effective Communication",
+    description: "Understanding communication patterns that strengthen relationships and leadership.",
+    thumbnail: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
+    youtubeUrl: "https://youtube.com/watch?v=videoID2"
+  },
+];
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState(TABS.FELLOWSHIPS);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // State for content
+  const [fellowships, setFellowships] = useState(initialFellowships);
+  const [activities, setActivities] = useState(initialActivities);
+  const [podcasts, setPodcasts] = useState(initialPodcasts);
+
+  // State for modals
+  const [editingFellowship, setEditingFellowship] = useState<any>(null);
+  const [editingActivity, setEditingActivity] = useState<any>(null);
+  const [editingPodcast, setEditingPodcast] = useState<any>(null);
 
   // Check for admin login status
   useEffect(() => {
@@ -24,6 +95,85 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn');
     navigate('/admin-access-only');
+  };
+
+  // Edit handlers for fellowships
+  const handleEditFellowship = (fellowship: any) => {
+    setEditingFellowship(fellowship);
+  };
+
+  const handleSaveFellowship = (updatedFellowship: any) => {
+    setFellowships(fellowships.map(f => 
+      f.id === updatedFellowship.id ? updatedFellowship : f
+    ));
+    setEditingFellowship(null);
+    toast({
+      title: "Fellowship Updated",
+      description: `"${updatedFellowship.title}" has been updated successfully.`,
+      duration: 3000,
+    });
+  };
+
+  // Edit handlers for activities
+  const handleEditActivity = (activity: any) => {
+    setEditingActivity(activity);
+  };
+
+  const handleSaveActivity = (updatedActivity: any) => {
+    setActivities(activities.map(a => 
+      a.id === updatedActivity.id ? updatedActivity : a
+    ));
+    setEditingActivity(null);
+    toast({
+      title: "Activity Updated",
+      description: `"${updatedActivity.title}" has been updated successfully.`,
+      duration: 3000,
+    });
+  };
+
+  // Edit handlers for podcasts
+  const handleEditPodcast = (podcast: any) => {
+    setEditingPodcast(podcast);
+  };
+
+  const handleSavePodcast = (updatedPodcast: any) => {
+    setPodcasts(podcasts.map(p => 
+      p.id === updatedPodcast.id ? updatedPodcast : p
+    ));
+    setEditingPodcast(null);
+    toast({
+      title: "Podcast Updated",
+      description: `"${updatedPodcast.title}" has been updated successfully.`,
+      duration: 3000,
+    });
+  };
+
+  // Delete handlers
+  const handleDeleteFellowship = (id: number) => {
+    setFellowships(fellowships.filter(f => f.id !== id));
+    toast({
+      title: "Fellowship Deleted",
+      description: "The fellowship has been deleted successfully.",
+      duration: 3000,
+    });
+  };
+
+  const handleDeleteActivity = (id: number) => {
+    setActivities(activities.filter(a => a.id !== id));
+    toast({
+      title: "Activity Deleted",
+      description: "The activity has been deleted successfully.",
+      duration: 3000,
+    });
+  };
+
+  const handleDeletePodcast = (id: number) => {
+    setPodcasts(podcasts.filter(p => p.id !== id));
+    toast({
+      title: "Podcast Deleted",
+      description: "The podcast has been deleted successfully.",
+      duration: 3000,
+    });
   };
 
   return (
@@ -86,9 +236,9 @@ const AdminDashboard = () => {
         </div>
 
         <div className="mb-6 flex justify-end">
-          <button className="bg-lom-yellow text-lom-dark px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
-            + Add New
-          </button>
+          <Button className="bg-lom-yellow text-lom-dark hover:bg-opacity-90">
+            <Plus className="mr-1" /> Add New
+          </Button>
         </div>
 
         {/* Tab content */}
@@ -109,26 +259,32 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
-                    <tr>
-                      <td className="px-4 py-4 whitespace-nowrap">Digital Marketing Fellowship</td>
-                      <td className="px-4 py-4 whitespace-nowrap">DigiLearn Academy</td>
-                      <td className="px-4 py-4 whitespace-nowrap">12 months</td>
-                      <td className="px-4 py-4 whitespace-nowrap">₹25,000/month</td>
-                      <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                        <button className="text-red-400 hover:text-red-300">Delete</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-4 whitespace-nowrap">Data Science Fellowship</td>
-                      <td className="px-4 py-4 whitespace-nowrap">TechMinds Institute</td>
-                      <td className="px-4 py-4 whitespace-nowrap">24 months</td>
-                      <td className="px-4 py-4 whitespace-nowrap">₹30,000/month</td>
-                      <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                        <button className="text-red-400 hover:text-red-300">Delete</button>
-                      </td>
-                    </tr>
+                    {fellowships.map((fellowship) => (
+                      <tr key={fellowship.id}>
+                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.title}</td>
+                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.organization}</td>
+                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.duration}</td>
+                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.stipend}</td>
+                        <td className="px-4 py-4 whitespace-nowrap space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-blue-400 hover:text-blue-300"
+                            onClick={() => handleEditFellowship(fellowship)}
+                          >
+                            <Pencil className="h-4 w-4 mr-1" /> Edit
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleDeleteFellowship(fellowship.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" /> Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -150,24 +306,31 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
-                    <tr>
-                      <td className="px-4 py-4 whitespace-nowrap">Morning Meditation</td>
-                      <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">https://images.unsplash.com/photo...</td>
-                      <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">https://example.com/meditation</td>
-                      <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                        <button className="text-red-400 hover:text-red-300">Delete</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-4 whitespace-nowrap">Book Club Discussions</td>
-                      <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">https://images.unsplash.com/photo...</td>
-                      <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">https://example.com/bookclub</td>
-                      <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                        <button className="text-red-400 hover:text-red-300">Delete</button>
-                      </td>
-                    </tr>
+                    {activities.map((activity) => (
+                      <tr key={activity.id}>
+                        <td className="px-4 py-4 whitespace-nowrap">{activity.title}</td>
+                        <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{activity.image}</td>
+                        <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{activity.url}</td>
+                        <td className="px-4 py-4 whitespace-nowrap space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-blue-400 hover:text-blue-300"
+                            onClick={() => handleEditActivity(activity)}
+                          >
+                            <Pencil className="h-4 w-4 mr-1" /> Edit
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleDeleteActivity(activity.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" /> Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -189,24 +352,31 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
-                    <tr>
-                      <td className="px-4 py-4 whitespace-nowrap">Building a Growth Mindset</td>
-                      <td className="px-4 py-4 truncate max-w-xs">Exploring strategies to develop a growth mindset...</td>
-                      <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">https://youtube.com/watch?v=videoID1</td>
-                      <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                        <button className="text-red-400 hover:text-red-300">Delete</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-4 whitespace-nowrap">The Art of Effective Communication</td>
-                      <td className="px-4 py-4 truncate max-w-xs">Understanding communication patterns that strengthen...</td>
-                      <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">https://youtube.com/watch?v=videoID2</td>
-                      <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300">Edit</button>
-                        <button className="text-red-400 hover:text-red-300">Delete</button>
-                      </td>
-                    </tr>
+                    {podcasts.map((podcast) => (
+                      <tr key={podcast.id}>
+                        <td className="px-4 py-4 whitespace-nowrap">{podcast.title}</td>
+                        <td className="px-4 py-4 truncate max-w-xs">{podcast.description}</td>
+                        <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{podcast.youtubeUrl}</td>
+                        <td className="px-4 py-4 whitespace-nowrap space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-blue-400 hover:text-blue-300"
+                            onClick={() => handleEditPodcast(podcast)}
+                          >
+                            <Pencil className="h-4 w-4 mr-1" /> Edit
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleDeletePodcast(podcast.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" /> Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -214,6 +384,31 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Modals */}
+      {editingFellowship && (
+        <EditFellowshipModal
+          fellowship={editingFellowship}
+          onClose={() => setEditingFellowship(null)}
+          onSave={handleSaveFellowship}
+        />
+      )}
+
+      {editingActivity && (
+        <EditActivityModal
+          activity={editingActivity}
+          onClose={() => setEditingActivity(null)}
+          onSave={handleSaveActivity}
+        />
+      )}
+
+      {editingPodcast && (
+        <EditPodcastModal
+          podcast={editingPodcast}
+          onClose={() => setEditingPodcast(null)}
+          onSave={handleSavePodcast}
+        />
+      )}
     </div>
   );
 };
