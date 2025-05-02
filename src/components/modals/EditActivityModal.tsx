@@ -38,7 +38,7 @@ const EditActivityModal = ({ activity, onClose, onSave }: EditActivityModalProps
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-4 border-b border-gray-800">
-          <h2 className="text-xl font-semibold">Edit Activity</h2>
+          <h2 className="text-xl font-semibold text-white">Edit Activity</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X />
           </Button>
@@ -46,35 +46,38 @@ const EditActivityModal = ({ activity, onClose, onSave }: EditActivityModalProps
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="text-gray-200">Title</Label>
             <Input 
               id="title"
               name="title"
               value={formData.title}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-gray-200 border-gray-700"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image">Image URL</Label>
+            <Label htmlFor="image" className="text-gray-200">Image URL</Label>
             <Input 
               id="image"
               name="image"
               value={formData.image}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-gray-200 border-gray-700"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="url">URL</Label>
+            <Label htmlFor="url" className="text-gray-200">URL</Label>
             <Input 
               id="url"
               name="url"
               value={formData.url}
               onChange={handleChange}
               required
+              className="bg-gray-800 text-gray-200 border-gray-700"
             />
           </div>
 
