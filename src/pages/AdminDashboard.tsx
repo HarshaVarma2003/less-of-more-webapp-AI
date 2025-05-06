@@ -1,119 +1,55 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from "@/components/ui/use-toast";
 import EditFellowshipModal from '@/components/modals/EditFellowshipModal';
 import EditActivityModal from '@/components/modals/EditActivityModal';
 import EditPodcastModal from '@/components/modals/EditPodcastModal';
-import { useToast } from "@/components/ui/use-toast";
 
-// Admin dashboard tabs
-const TABS = {
-  FELLOWSHIPS: 'fellowships',
-  ACTIVITIES: 'activities',
-  PODCASTS: 'podcasts',
-};
+// Import new components
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import TabsNav from '@/components/dashboard/TabsNav';
+import FellowshipsTab from '@/components/dashboard/FellowshipsTab';
+import ActivitiesTab from '@/components/dashboard/ActivitiesTab';
+import PodcastsTab from '@/components/dashboard/PodcastsTab';
 
-// Initial data setup (will be overridden by localStorage if available)
-const initialFellowships = [
-  {
-    id: 1,
-    title: "Digital Marketing Fellowship",
-    organization: "DigiLearn Academy",
-    about: "A comprehensive fellowship program focused on digital marketing strategies and implementation.",
-    responsibilities: "Create marketing campaigns, analyze data, develop social media strategies.",
-    eligibility: "Bachelor's degree in Marketing or related field. Experience with digital tools.",
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹25,000/month",
-    duration: "12 months",
-    location: "Remote",
-    website: "https://digilearn-academy.example.com"
-  },
-  {
-    id: 2,
-    title: "Data Science Fellowship",
-    organization: "TechMinds Institute",
-    about: "An intensive fellowship program focused on data science and machine learning.",
-    responsibilities: "Analyze large datasets, build predictive models, present insights to stakeholders.",
-    eligibility: "Master's degree in Statistics, Computer Science or related field. Experience with Python and R.",
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹30,000/month",
-    duration: "24 months",
-    location: "Bangalore",
-    website: "https://techminds-institute.example.com"
-  },
-];
-
-// Sample activities data
-const initialActivities = [
-  {
-    id: 1,
-    title: "Morning Meditation",
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/meditation"
-  },
-  {
-    id: 2,
-    title: "Book Club Discussions",
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/bookclub"
-  },
-];
-
-// Sample podcasts data
-const initialPodcasts = [
-  {
-    id: 1,
-    title: "Building a Growth Mindset",
-    description: "Exploring strategies to develop a growth mindset for personal and professional development.",
-    thumbnail: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID1"
-  },
-  {
-    id: 2,
-    title: "The Art of Effective Communication",
-    description: "Understanding communication patterns that strengthen relationships and leadership.",
-    thumbnail: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID2"
-  },
-];
-
-// Function to get the next available ID in an array of objects
-const getNextId = (items: any[]) => {
-  return Math.max(0, ...items.map(item => item.id)) + 1;
-};
+// Import types and utilities
+import { Fellowship, Activity, Podcast, TABS, TabType } from '@/types/admin';
+import { getNextId, saveToLocalStorage } from '@/utils/localStorageUtils';
+import { initialFellowships, initialActivities, initialPodcasts } from '@/data/initialData';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState(TABS.FELLOWSHIPS);
+  const [activeTab, setActiveTab] = useState<TabType>(TABS.FELLOWSHIPS);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   // State for content with localStorage persistence
-  const [fellowships, setFellowships] = useState(() => {
+  const [fellowships, setFellowships] = useState<Fellowship[]>(() => {
     const saved = localStorage.getItem('lom_fellowships');
     return saved ? JSON.parse(saved) : initialFellowships;
   });
   
-  const [activities, setActivities] = useState(() => {
+  const [activities, setActivities] = useState<Activity[]>(() => {
     const saved = localStorage.getItem('lom_activities');
     return saved ? JSON.parse(saved) : initialActivities;
   });
   
-  const [podcasts, setPodcasts] = useState(() => {
+  const [podcasts, setPodcasts] = useState<Podcast[]>(() => {
     const saved = localStorage.getItem('lom_podcasts');
     return saved ? JSON.parse(saved) : initialPodcasts;
   });
 
-  // Save to localStorage whenever data changes with a specific function to ensure consistency
-  const saveToLocalStorage = (key: string, data: any) => {
-    try {
-      console.log(`Saving ${key} to localStorage:`, data);
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error(`Error saving ${key} to localStorage:`, error);
-    }
-  };
+  // State for modals
+  const [editingFellowship, setEditingFellowship] = useState<Fellowship | null>(null);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [editingPodcast, setEditingPodcast] = useState<Podcast | null>(null);
+  const [isAddingFellowship, setIsAddingFellowship] = useState(false);
+  const [isAddingActivity, setIsAddingActivity] = useState(false);
+  const [isAddingPodcast, setIsAddingPodcast] = useState(false);
 
+  // Save to localStorage whenever data changes
   useEffect(() => {
     saveToLocalStorage('lom_fellowships', fellowships);
   }, [fellowships]);
@@ -125,14 +61,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     saveToLocalStorage('lom_podcasts', podcasts);
   }, [podcasts]);
-
-  // State for modals
-  const [editingFellowship, setEditingFellowship] = useState<any>(null);
-  const [editingActivity, setEditingActivity] = useState<any>(null);
-  const [editingPodcast, setEditingPodcast] = useState<any>(null);
-  const [isAddingFellowship, setIsAddingFellowship] = useState(false);
-  const [isAddingActivity, setIsAddingActivity] = useState(false);
-  const [isAddingPodcast, setIsAddingPodcast] = useState(false);
 
   // Check for admin login status
   useEffect(() => {
@@ -188,17 +116,15 @@ const AdminDashboard = () => {
   };
 
   // Edit handlers for fellowships
-  const handleEditFellowship = (fellowship: any) => {
+  const handleEditFellowship = (fellowship: Fellowship) => {
     setEditingFellowship(fellowship);
     setIsAddingFellowship(false);
   };
 
-  const handleSaveFellowship = (updatedFellowship: any) => {
+  const handleSaveFellowship = (updatedFellowship: Fellowship) => {
     if (isAddingFellowship) {
       const updatedFellowships = [...fellowships, updatedFellowship];
       setFellowships(updatedFellowships);
-      // Force immediate save to localStorage
-      saveToLocalStorage('lom_fellowships', updatedFellowships);
       toast({
         title: "Fellowship Added",
         description: `"${updatedFellowship.title}" has been added successfully.`,
@@ -209,8 +135,6 @@ const AdminDashboard = () => {
         f.id === updatedFellowship.id ? updatedFellowship : f
       );
       setFellowships(updatedFellowships);
-      // Force immediate save to localStorage
-      saveToLocalStorage('lom_fellowships', updatedFellowships);
       toast({
         title: "Fellowship Updated",
         description: `"${updatedFellowship.title}" has been updated successfully.`,
@@ -222,17 +146,15 @@ const AdminDashboard = () => {
   };
 
   // Edit handlers for activities
-  const handleEditActivity = (activity: any) => {
+  const handleEditActivity = (activity: Activity) => {
     setEditingActivity(activity);
     setIsAddingActivity(false);
   };
 
-  const handleSaveActivity = (updatedActivity: any) => {
+  const handleSaveActivity = (updatedActivity: Activity) => {
     if (isAddingActivity) {
       const updatedActivities = [...activities, updatedActivity];
       setActivities(updatedActivities);
-      // Force immediate save to localStorage
-      saveToLocalStorage('lom_activities', updatedActivities);
       toast({
         title: "Activity Added",
         description: `"${updatedActivity.title}" has been added successfully.`,
@@ -243,8 +165,6 @@ const AdminDashboard = () => {
         a.id === updatedActivity.id ? updatedActivity : a
       );
       setActivities(updatedActivities);
-      // Force immediate save to localStorage
-      saveToLocalStorage('lom_activities', updatedActivities);
       toast({
         title: "Activity Updated",
         description: `"${updatedActivity.title}" has been updated successfully.`,
@@ -256,17 +176,15 @@ const AdminDashboard = () => {
   };
 
   // Edit handlers for podcasts
-  const handleEditPodcast = (podcast: any) => {
+  const handleEditPodcast = (podcast: Podcast) => {
     setEditingPodcast(podcast);
     setIsAddingPodcast(false);
   };
 
-  const handleSavePodcast = (updatedPodcast: any) => {
+  const handleSavePodcast = (updatedPodcast: Podcast) => {
     if (isAddingPodcast) {
       const updatedPodcasts = [...podcasts, updatedPodcast];
       setPodcasts(updatedPodcasts);
-      // Force immediate save to localStorage
-      saveToLocalStorage('lom_podcasts', updatedPodcasts);
       toast({
         title: "Podcast Added",
         description: `"${updatedPodcast.title}" has been added successfully.`,
@@ -277,8 +195,6 @@ const AdminDashboard = () => {
         p.id === updatedPodcast.id ? updatedPodcast : p
       );
       setPodcasts(updatedPodcasts);
-      // Force immediate save to localStorage
-      saveToLocalStorage('lom_podcasts', updatedPodcasts);
       toast({
         title: "Podcast Updated",
         description: `"${updatedPodcast.title}" has been updated successfully.`,
@@ -293,8 +209,6 @@ const AdminDashboard = () => {
   const handleDeleteFellowship = (id: number) => {
     const updatedFellowships = fellowships.filter(f => f.id !== id);
     setFellowships(updatedFellowships);
-    // Force immediate save to localStorage
-    saveToLocalStorage('lom_fellowships', updatedFellowships);
     toast({
       title: "Fellowship Deleted",
       description: "The fellowship has been deleted successfully.",
@@ -305,8 +219,6 @@ const AdminDashboard = () => {
   const handleDeleteActivity = (id: number) => {
     const updatedActivities = activities.filter(a => a.id !== id);
     setActivities(updatedActivities);
-    // Force immediate save to localStorage
-    saveToLocalStorage('lom_activities', updatedActivities);
     toast({
       title: "Activity Deleted",
       description: "The activity has been deleted successfully.",
@@ -317,8 +229,6 @@ const AdminDashboard = () => {
   const handleDeletePodcast = (id: number) => {
     const updatedPodcasts = podcasts.filter(p => p.id !== id);
     setPodcasts(updatedPodcasts);
-    // Force immediate save to localStorage
-    saveToLocalStorage('lom_podcasts', updatedPodcasts);
     toast({
       title: "Podcast Deleted",
       description: "The podcast has been deleted successfully.",
@@ -328,62 +238,10 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-lom-dark">
-      <header className="bg-gray-900 border-b border-gray-800 py-4 px-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <h1 className="text-xl font-bold">
-              <span className="text-lom-light">Less</span>
-              <span className="text-lom-yellow">Of</span>
-              <span className="text-lom-light">More</span>
-              <span className="text-gray-400 ml-2 font-normal">Admin Dashboard</span>
-            </h1>
-          </div>
-          <div>
-            <button 
-              onClick={handleLogout}
-              className="px-4 py-1 border border-gray-600 rounded-md hover:bg-gray-800 transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader handleLogout={handleLogout} />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="border-b border-gray-800 flex overflow-x-auto">
-            <button
-              className={`py-3 px-6 -mb-px ${
-                activeTab === TABS.FELLOWSHIPS 
-                  ? 'border-b-2 border-lom-yellow text-lom-yellow'
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
-              onClick={() => setActiveTab(TABS.FELLOWSHIPS)}
-            >
-              Fellowships
-            </button>
-            <button
-              className={`py-3 px-6 -mb-px ${
-                activeTab === TABS.ACTIVITIES 
-                  ? 'border-b-2 border-lom-yellow text-lom-yellow'
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
-              onClick={() => setActiveTab(TABS.ACTIVITIES)}
-            >
-              Activities
-            </button>
-            <button
-              className={`py-3 px-6 -mb-px ${
-                activeTab === TABS.PODCASTS 
-                  ? 'border-b-2 border-lom-yellow text-lom-yellow'
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
-              onClick={() => setActiveTab(TABS.PODCASTS)}
-            >
-              Podcasts
-            </button>
-          </div>
-        </div>
+        <TabsNav activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <div className="mb-6 flex justify-end">
           <Button 
@@ -397,143 +255,27 @@ const AdminDashboard = () => {
         {/* Tab content */}
         <div className="bg-gray-900 rounded-lg p-6">
           {activeTab === TABS.FELLOWSHIPS && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4">Manage Fellowships</h2>
-              
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-800">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Title</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Organization</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Duration</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Stipend</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800">
-                    {fellowships.map((fellowship) => (
-                      <tr key={fellowship.id}>
-                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.title}</td>
-                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.organization}</td>
-                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.duration}</td>
-                        <td className="px-4 py-4 whitespace-nowrap">{fellowship.stipend}</td>
-                        <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-blue-400 hover:text-blue-300"
-                            onClick={() => handleEditFellowship(fellowship)}
-                          >
-                            <Pencil className="h-4 w-4 mr-1" /> Edit
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-red-400 hover:text-red-300"
-                            onClick={() => handleDeleteFellowship(fellowship.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" /> Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <FellowshipsTab 
+              fellowships={fellowships}
+              onEdit={handleEditFellowship}
+              onDelete={handleDeleteFellowship}
+            />
           )}
 
           {activeTab === TABS.ACTIVITIES && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4">Manage Activities</h2>
-              
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-800">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Title</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Image URL</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Link</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800">
-                    {activities.map((activity) => (
-                      <tr key={activity.id}>
-                        <td className="px-4 py-4 whitespace-nowrap">{activity.title}</td>
-                        <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{activity.image}</td>
-                        <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{activity.url}</td>
-                        <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-blue-400 hover:text-blue-300"
-                            onClick={() => handleEditActivity(activity)}
-                          >
-                            <Pencil className="h-4 w-4 mr-1" /> Edit
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-red-400 hover:text-red-300"
-                            onClick={() => handleDeleteActivity(activity.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" /> Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <ActivitiesTab 
+              activities={activities}
+              onEdit={handleEditActivity}
+              onDelete={handleDeleteActivity}
+            />
           )}
 
           {activeTab === TABS.PODCASTS && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4">Manage Podcasts</h2>
-              
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-800">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Title</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Description</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">YouTube URL</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800">
-                    {podcasts.map((podcast) => (
-                      <tr key={podcast.id}>
-                        <td className="px-4 py-4 whitespace-nowrap">{podcast.title}</td>
-                        <td className="px-4 py-4 truncate max-w-xs">{podcast.description}</td>
-                        <td className="px-4 py-4 whitespace-nowrap truncate max-w-xs">{podcast.youtubeUrl}</td>
-                        <td className="px-4 py-4 whitespace-nowrap space-x-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-blue-400 hover:text-blue-300"
-                            onClick={() => handleEditPodcast(podcast)}
-                          >
-                            <Pencil className="h-4 w-4 mr-1" /> Edit
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-red-400 hover:text-red-300"
-                            onClick={() => handleDeletePodcast(podcast.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" /> Delete
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <PodcastsTab 
+              podcasts={podcasts}
+              onEdit={handleEditPodcast}
+              onDelete={handleDeletePodcast}
+            />
           )}
         </div>
       </div>
