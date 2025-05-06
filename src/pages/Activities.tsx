@@ -44,7 +44,7 @@ const fallbackActivities = [
   {
     id: 6,
     title: "Volunteering Initiative",
-    image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&q=80&w=740",
+    image: "https://images.unsplash.com/photo-721322800607-8c38375eef04?auto=format&fit=crop&q=80&w=740",
     url: "https://example.com/volunteering"
   }
 ];
@@ -56,26 +56,48 @@ const Activities = () => {
 
   // Load activities from localStorage when component mounts
   useEffect(() => {
-    // Small delay to ensure localStorage is checked after any potential updates
-    const timer = setTimeout(() => {
+    const loadData = () => {
       try {
+        console.log("Attempting to load activities from localStorage");
         const savedActivities = localStorage.getItem('lom_activities');
-        if (savedActivities) {
-          setActivities(JSON.parse(savedActivities));
+        console.log("Raw localStorage data:", savedActivities);
+        
+        if (savedActivities && savedActivities !== "undefined") {
+          const parsedData = JSON.parse(savedActivities);
+          console.log("Parsed activities data:", parsedData);
+          setActivities(parsedData);
         } else {
-          // If no data in localStorage, use fallback and save it
+          console.log("No activities found in localStorage, using fallback data");
           setActivities(fallbackActivities);
+          // Store fallback data in localStorage for future use
           localStorage.setItem('lom_activities', JSON.stringify(fallbackActivities));
         }
       } catch (error) {
         console.error("Error loading activities:", error);
         setActivities(fallbackActivities);
+        // Store fallback data in localStorage for future use after error
+        localStorage.setItem('lom_activities', JSON.stringify(fallbackActivities));
       } finally {
         setLoading(false);
       }
-    }, 100);
+    };
+
+    // Initial load
+    loadData();
+
+    // Set up storage event listener to catch changes
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'lom_activities') {
+        console.log("localStorage change detected for activities");
+        loadData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
     
-    return () => clearTimeout(timer);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const openActivity = (activity: Activity) => {
@@ -112,7 +134,7 @@ const Activities = () => {
       <div className="container mx-auto px-4 md:px-6 py-12">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            10 Interesting <span className="text-lom-yellow">Activities</span>
+            Interesting <span className="text-lom-yellow">Activities</span>
           </h1>
           <p className="text-lg text-gray-400">
             Explore diverse experiences that can enrich your personal and professional growth.

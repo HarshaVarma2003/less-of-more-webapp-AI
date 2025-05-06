@@ -104,17 +104,26 @@ const AdminDashboard = () => {
     return saved ? JSON.parse(saved) : initialPodcasts;
   });
 
-  // Save to localStorage whenever data changes
+  // Save to localStorage whenever data changes with a specific function to ensure consistency
+  const saveToLocalStorage = (key: string, data: any) => {
+    try {
+      console.log(`Saving ${key} to localStorage:`, data);
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error saving ${key} to localStorage:`, error);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('lom_fellowships', JSON.stringify(fellowships));
+    saveToLocalStorage('lom_fellowships', fellowships);
   }, [fellowships]);
 
   useEffect(() => {
-    localStorage.setItem('lom_activities', JSON.stringify(activities));
+    saveToLocalStorage('lom_activities', activities);
   }, [activities]);
 
   useEffect(() => {
-    localStorage.setItem('lom_podcasts', JSON.stringify(podcasts));
+    saveToLocalStorage('lom_podcasts', podcasts);
   }, [podcasts]);
 
   // State for modals
@@ -186,16 +195,22 @@ const AdminDashboard = () => {
 
   const handleSaveFellowship = (updatedFellowship: any) => {
     if (isAddingFellowship) {
-      setFellowships([...fellowships, updatedFellowship]);
+      const updatedFellowships = [...fellowships, updatedFellowship];
+      setFellowships(updatedFellowships);
+      // Force immediate save to localStorage
+      saveToLocalStorage('lom_fellowships', updatedFellowships);
       toast({
         title: "Fellowship Added",
         description: `"${updatedFellowship.title}" has been added successfully.`,
         duration: 3000,
       });
     } else {
-      setFellowships(fellowships.map(f => 
+      const updatedFellowships = fellowships.map(f => 
         f.id === updatedFellowship.id ? updatedFellowship : f
-      ));
+      );
+      setFellowships(updatedFellowships);
+      // Force immediate save to localStorage
+      saveToLocalStorage('lom_fellowships', updatedFellowships);
       toast({
         title: "Fellowship Updated",
         description: `"${updatedFellowship.title}" has been updated successfully.`,
@@ -214,16 +229,22 @@ const AdminDashboard = () => {
 
   const handleSaveActivity = (updatedActivity: any) => {
     if (isAddingActivity) {
-      setActivities([...activities, updatedActivity]);
+      const updatedActivities = [...activities, updatedActivity];
+      setActivities(updatedActivities);
+      // Force immediate save to localStorage
+      saveToLocalStorage('lom_activities', updatedActivities);
       toast({
         title: "Activity Added",
         description: `"${updatedActivity.title}" has been added successfully.`,
         duration: 3000,
       });
     } else {
-      setActivities(activities.map(a => 
+      const updatedActivities = activities.map(a => 
         a.id === updatedActivity.id ? updatedActivity : a
-      ));
+      );
+      setActivities(updatedActivities);
+      // Force immediate save to localStorage
+      saveToLocalStorage('lom_activities', updatedActivities);
       toast({
         title: "Activity Updated",
         description: `"${updatedActivity.title}" has been updated successfully.`,
@@ -242,16 +263,22 @@ const AdminDashboard = () => {
 
   const handleSavePodcast = (updatedPodcast: any) => {
     if (isAddingPodcast) {
-      setPodcasts([...podcasts, updatedPodcast]);
+      const updatedPodcasts = [...podcasts, updatedPodcast];
+      setPodcasts(updatedPodcasts);
+      // Force immediate save to localStorage
+      saveToLocalStorage('lom_podcasts', updatedPodcasts);
       toast({
         title: "Podcast Added",
         description: `"${updatedPodcast.title}" has been added successfully.`,
         duration: 3000,
       });
     } else {
-      setPodcasts(podcasts.map(p => 
+      const updatedPodcasts = podcasts.map(p => 
         p.id === updatedPodcast.id ? updatedPodcast : p
-      ));
+      );
+      setPodcasts(updatedPodcasts);
+      // Force immediate save to localStorage
+      saveToLocalStorage('lom_podcasts', updatedPodcasts);
       toast({
         title: "Podcast Updated",
         description: `"${updatedPodcast.title}" has been updated successfully.`,
@@ -264,7 +291,10 @@ const AdminDashboard = () => {
 
   // Delete handlers
   const handleDeleteFellowship = (id: number) => {
-    setFellowships(fellowships.filter(f => f.id !== id));
+    const updatedFellowships = fellowships.filter(f => f.id !== id);
+    setFellowships(updatedFellowships);
+    // Force immediate save to localStorage
+    saveToLocalStorage('lom_fellowships', updatedFellowships);
     toast({
       title: "Fellowship Deleted",
       description: "The fellowship has been deleted successfully.",
@@ -273,7 +303,10 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteActivity = (id: number) => {
-    setActivities(activities.filter(a => a.id !== id));
+    const updatedActivities = activities.filter(a => a.id !== id);
+    setActivities(updatedActivities);
+    // Force immediate save to localStorage
+    saveToLocalStorage('lom_activities', updatedActivities);
     toast({
       title: "Activity Deleted",
       description: "The activity has been deleted successfully.",
@@ -282,7 +315,10 @@ const AdminDashboard = () => {
   };
 
   const handleDeletePodcast = (id: number) => {
-    setPodcasts(podcasts.filter(p => p.id !== id));
+    const updatedPodcasts = podcasts.filter(p => p.id !== id);
+    setPodcasts(updatedPodcasts);
+    // Force immediate save to localStorage
+    saveToLocalStorage('lom_podcasts', updatedPodcasts);
     toast({
       title: "Podcast Deleted",
       description: "The podcast has been deleted successfully.",
