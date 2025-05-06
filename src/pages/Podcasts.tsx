@@ -45,15 +45,30 @@ const fallbackPodcasts = [
 const Podcasts = () => {
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [selectedPodcast, setSelectedPodcast] = useState<Podcast | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Load podcasts from localStorage when component mounts
   useEffect(() => {
-    const savedPodcasts = localStorage.getItem('lom_podcasts');
-    if (savedPodcasts) {
-      setPodcasts(JSON.parse(savedPodcasts));
-    } else {
-      setPodcasts(fallbackPodcasts);
-    }
+    // Small delay to ensure localStorage is checked after any potential updates
+    const timer = setTimeout(() => {
+      try {
+        const savedPodcasts = localStorage.getItem('lom_podcasts');
+        if (savedPodcasts) {
+          setPodcasts(JSON.parse(savedPodcasts));
+        } else {
+          // If no data in localStorage, use fallback and save it
+          setPodcasts(fallbackPodcasts);
+          localStorage.setItem('lom_podcasts', JSON.stringify(fallbackPodcasts));
+        }
+      } catch (error) {
+        console.error("Error loading podcasts:", error);
+        setPodcasts(fallbackPodcasts);
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const formatYouTubeEmbedUrl = (url: string) => {
@@ -73,6 +88,32 @@ const Podcasts = () => {
       return url;
     }
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+              Loading <span className="text-lom-yellow">Podcasts</span>...
+            </h1>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-gray-900 rounded-lg overflow-hidden shadow-lg animate-pulse">
+                <div className="h-48 bg-gray-800"></div>
+                <div className="p-5 space-y-3">
+                  <div className="h-6 bg-gray-800 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-800 rounded"></div>
+                  <div className="h-4 bg-gray-800 rounded w-5/6"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

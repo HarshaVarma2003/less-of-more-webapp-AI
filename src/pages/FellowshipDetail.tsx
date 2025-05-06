@@ -38,33 +38,38 @@ const FellowshipDetail = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
+  // Force refresh to ensure data is loaded
   useEffect(() => {
     const fetchFellowship = () => {
       setLoading(true);
       
       try {
-        const savedFellowships = localStorage.getItem('lom_fellowships');
-        if (savedFellowships) {
-          const parsedFellowships: Fellowship[] = JSON.parse(savedFellowships);
-          const foundFellowship = parsedFellowships.find(f => f.id === Number(id));
+        // Add a small delay to ensure localStorage is checked after any updates
+        setTimeout(() => {
+          const savedFellowships = localStorage.getItem('lom_fellowships');
           
-          if (foundFellowship) {
-            setFellowship(foundFellowship);
+          if (savedFellowships) {
+            const parsedFellowships: Fellowship[] = JSON.parse(savedFellowships);
+            const foundFellowship = parsedFellowships.find(f => f.id === Number(id));
+            
+            if (foundFellowship) {
+              setFellowship(foundFellowship);
+            } else {
+              setNotFound(true);
+            }
           } else {
-            setNotFound(true);
+            // If no fellowships in localStorage, check if the id matches our fallback
+            if (Number(id) === fallbackFellowship.id) {
+              setFellowship(fallbackFellowship);
+            } else {
+              setNotFound(true);
+            }
           }
-        } else {
-          // If no fellowships in localStorage, check if the id matches our fallback
-          if (Number(id) === fallbackFellowship.id) {
-            setFellowship(fallbackFellowship);
-          } else {
-            setNotFound(true);
-          }
-        }
+          setLoading(false);
+        }, 100);
       } catch (error) {
         console.error("Error loading fellowship data:", error);
         setNotFound(true);
-      } finally {
         setLoading(false);
       }
     };

@@ -52,15 +52,30 @@ const fallbackActivities = [
 const Activities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Load activities from localStorage when component mounts
   useEffect(() => {
-    const savedActivities = localStorage.getItem('lom_activities');
-    if (savedActivities) {
-      setActivities(JSON.parse(savedActivities));
-    } else {
-      setActivities(fallbackActivities);
-    }
+    // Small delay to ensure localStorage is checked after any potential updates
+    const timer = setTimeout(() => {
+      try {
+        const savedActivities = localStorage.getItem('lom_activities');
+        if (savedActivities) {
+          setActivities(JSON.parse(savedActivities));
+        } else {
+          // If no data in localStorage, use fallback and save it
+          setActivities(fallbackActivities);
+          localStorage.setItem('lom_activities', JSON.stringify(fallbackActivities));
+        }
+      } catch (error) {
+        console.error("Error loading activities:", error);
+        setActivities(fallbackActivities);
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const openActivity = (activity: Activity) => {
@@ -70,6 +85,27 @@ const Activities = () => {
   const closeActivity = () => {
     setSelectedActivity(null);
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+              Loading <span className="text-lom-yellow">Activities</span>...
+            </h1>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-square bg-gray-800 rounded-lg"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

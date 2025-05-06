@@ -62,16 +62,59 @@ const fallbackFellowships = [
 
 const Fellowship = () => {
   const [fellowships, setFellowships] = useState<Fellowship[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Load fellowships from localStorage when component mounts
   useEffect(() => {
-    const savedFellowships = localStorage.getItem('lom_fellowships');
-    if (savedFellowships) {
-      setFellowships(JSON.parse(savedFellowships));
-    } else {
-      setFellowships(fallbackFellowships);
-    }
+    // Small delay to ensure localStorage is checked after any potential updates
+    const timer = setTimeout(() => {
+      try {
+        const savedFellowships = localStorage.getItem('lom_fellowships');
+        if (savedFellowships) {
+          const parsed = JSON.parse(savedFellowships);
+          setFellowships(parsed);
+        } else {
+          setFellowships(fallbackFellowships);
+          // Store fallback data in localStorage for future use
+          localStorage.setItem('lom_fellowships', JSON.stringify(fallbackFellowships));
+        }
+      } catch (error) {
+        console.error("Error loading fellowships:", error);
+        setFellowships(fallbackFellowships);
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+              Loading <span className="text-lom-yellow">Fellowships</span>...
+            </h1>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-gray-900 rounded-lg overflow-hidden shadow-lg animate-pulse">
+                <div className="h-48 bg-gray-800"></div>
+                <div className="p-5 space-y-4">
+                  <div className="h-6 bg-gray-800 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+                  <div className="h-20 bg-gray-800 rounded"></div>
+                  <div className="h-10 bg-gray-800 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
