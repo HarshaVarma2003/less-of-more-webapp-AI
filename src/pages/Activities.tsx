@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import type { Activity } from '../types/admin';
 import { fetchActivities } from '../utils/apiUtils';
+import { toast } from '@/hooks/use-toast';
 
 const Activities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -10,7 +11,7 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load activities from API when component mounts
+  // Load activities from localStorage when component mounts
   useEffect(() => {
     const getActivities = async () => {
       try {
@@ -27,6 +28,11 @@ const Activities = () => {
       } catch (err) {
         setError('Failed to load activities. Please try again later.');
         console.error('Error loading activities:', err);
+        toast({
+          title: "Error",
+          description: "Failed to load activities",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }

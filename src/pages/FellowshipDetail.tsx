@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import type { Fellowship } from '../types/admin';
 import { fetchFellowshipById } from '../utils/apiUtils';
+import { toast } from '@/hooks/use-toast';
 
 const FellowshipDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,10 +29,20 @@ const FellowshipDetail = () => {
           setError(null);
         } else {
           setError('Fellowship not found. Please check the CMS content.');
+          toast({
+            title: "Error",
+            description: "Fellowship not found",
+            variant: "destructive"
+          });
         }
       } catch (err) {
         setError('Failed to load fellowship details. Please try again later.');
         console.error('Error loading fellowship:', err);
+        toast({
+          title: "Error",
+          description: "Failed to load fellowship details",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }

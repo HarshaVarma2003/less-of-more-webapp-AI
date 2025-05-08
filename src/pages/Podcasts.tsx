@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import type { Podcast } from '../types/admin';
 import { fetchPodcasts } from '../utils/apiUtils';
+import { toast } from '@/hooks/use-toast';
 
 const Podcasts = () => {
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
@@ -10,7 +10,7 @@ const Podcasts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load podcasts from API when component mounts
+  // Load podcasts from localStorage when component mounts
   useEffect(() => {
     const getPodcasts = async () => {
       try {
@@ -27,6 +27,11 @@ const Podcasts = () => {
       } catch (err) {
         setError('Failed to load podcasts. Please try again later.');
         console.error('Error loading podcasts:', err);
+        toast({
+          title: "Error",
+          description: "Failed to load podcasts",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }

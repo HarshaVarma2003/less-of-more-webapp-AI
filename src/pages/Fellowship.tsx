@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import type { Fellowship as FellowshipType } from '../types/admin';
 import { fetchFellowships } from '../utils/apiUtils';
+import { toast } from '@/hooks/use-toast';
 
 const Fellowship = () => {
   const [fellowships, setFellowships] = useState<FellowshipType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch fellowships from API when component mounts
+  // Fetch fellowships from localStorage when component mounts
   useEffect(() => {
     const getFellowships = async () => {
       try {
@@ -27,6 +28,11 @@ const Fellowship = () => {
       } catch (err) {
         setError('Failed to load fellowships. Please try again later.');
         console.error('Error loading fellowships:', err);
+        toast({
+          title: "Error",
+          description: "Failed to load fellowships",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
