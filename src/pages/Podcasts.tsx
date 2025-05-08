@@ -18,10 +18,10 @@ const Podcasts = () => {
         const data = await fetchPodcasts();
         console.log('Podcasts page received data:', data);
         
-        if (data && data.length > 0) {
-          setPodcasts(data);
-          setError(null);
-        } else {
+        setPodcasts(data);
+        setError(null);
+        
+        if (data.length === 0) {
           setError('No podcasts found. Please check the CMS content.');
         }
       } catch (err) {
@@ -112,32 +112,38 @@ const Podcasts = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {podcasts.map((podcast) => (
-            <div key={podcast.id} className="bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="relative cursor-pointer" onClick={() => setSelectedPodcast(podcast)}>
-                <img 
-                  src={podcast.thumbnail} 
-                  alt={podcast.title} 
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-lom-yellow flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-lom-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+        {podcasts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {podcasts.map((podcast) => (
+              <div key={podcast.id} className="bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                <div className="relative cursor-pointer" onClick={() => setSelectedPodcast(podcast)}>
+                  <img 
+                    src={podcast.thumbnail} 
+                    alt={podcast.title} 
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-lom-yellow flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-lom-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
+                
+                <div className="p-5">
+                  <h3 className="text-xl font-bold mb-2">{podcast.title}</h3>
+                  <p className="text-gray-400">{podcast.description}</p>
+                </div>
               </div>
-              
-              <div className="p-5">
-                <h3 className="text-xl font-bold mb-2">{podcast.title}</h3>
-                <p className="text-gray-400">{podcast.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-lg text-gray-400">No podcasts available. Add content through the CMS.</p>
+          </div>
+        )}
 
         {/* Podcast Modal */}
         {selectedPodcast && (

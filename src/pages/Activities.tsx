@@ -18,10 +18,10 @@ const Activities = () => {
         const data = await fetchActivities();
         console.log('Activities page received data:', data);
         
-        if (data && data.length > 0) {
-          setActivities(data);
-          setError(null);
-        } else {
+        setActivities(data);
+        setError(null);
+        
+        if (data.length === 0) {
           setError('No activities found. Please check the CMS content.');
         }
       } catch (err) {
@@ -97,26 +97,32 @@ const Activities = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activities.map((activity) => (
-            <div 
-              key={activity.id} 
-              className="cursor-pointer card-hover" 
-              onClick={() => openActivity(activity)}
-            >
-              <div className="relative aspect-square">
-                <img 
-                  src={activity.image} 
-                  alt={activity.title} 
-                  className="w-full h-full object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-lg flex items-end p-4">
-                  <h3 className="text-xl font-medium text-white">{activity.title}</h3>
+        {activities.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activities.map((activity) => (
+              <div 
+                key={activity.id} 
+                className="cursor-pointer card-hover" 
+                onClick={() => openActivity(activity)}
+              >
+                <div className="relative aspect-square">
+                  <img 
+                    src={activity.image} 
+                    alt={activity.title} 
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-lg flex items-end p-4">
+                    <h3 className="text-xl font-medium text-white">{activity.title}</h3>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-lg text-gray-400">No activities available. Add content through the CMS.</p>
+          </div>
+        )}
 
         {/* Activity Lightbox */}
         {selectedActivity && (

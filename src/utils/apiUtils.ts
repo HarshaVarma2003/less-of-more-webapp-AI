@@ -1,6 +1,5 @@
 
 import { Fellowship, Activity, Podcast } from '../types/admin';
-import { initialFellowships, initialActivities, initialPodcasts } from '../data/initialData';
 
 // Base URL for API requests - would point to your CMS API endpoint
 const API_BASE_URL = '/api';
@@ -11,30 +10,37 @@ async function fetchFromAPI<T>(endpoint: string): Promise<T> {
     console.log(`Fetching data from ${endpoint}`);
     
     // In a production environment, this would fetch from your actual CMS API
-    // For example: const response = await fetch(`${API_BASE_URL}${endpoint}`);
+    // For now, we'll simulate API responses without fallback data
+    
+    // This is where your real API call would happen:
+    // const response = await fetch(`${API_BASE_URL}${endpoint}`);
+    // if (!response.ok) {
+    //   throw new Error(`API error: ${response.status}`);
+    // }
     // return await response.json();
     
-    // For demonstration, we're simulating API calls
-    // In a real implementation, this would be replaced with actual API calls
+    // For demonstration, we're simulating empty API responses
+    // In a real implementation, this should connect to your actual CMS
     if (endpoint.includes('fellowships')) {
       if (endpoint.includes('/')) {
         // Single fellowship request
         const id = Number(endpoint.split('/').pop());
-        // This would be an API call to get a specific fellowship by ID
         console.log(`Fetching fellowship with id: ${id}`);
-        const fellowship = initialFellowships.find((f: Fellowship) => f.id === id);
-        if (!fellowship) throw new Error(`Fellowship with ID ${id} not found`);
-        return fellowship as T;
+        // Return null to indicate no data found - in production this would fetch from CMS
+        return null as T;
       }
       // All fellowships request
-      console.log('Fetching all fellowships from API');
-      return initialFellowships as T;
+      console.log('Fetching all fellowships from CMS API');
+      // Return empty array - in production this would fetch from CMS
+      return [] as unknown as T;
     } else if (endpoint.includes('activities')) {
-      console.log('Fetching all activities from API');
-      return initialActivities as T;
+      console.log('Fetching all activities from CMS API');
+      // Return empty array - in production this would fetch from CMS
+      return [] as unknown as T;
     } else if (endpoint.includes('podcasts')) {
-      console.log('Fetching all podcasts from API');
-      return initialPodcasts as T;
+      console.log('Fetching all podcasts from CMS API');
+      // Return empty array - in production this would fetch from CMS
+      return [] as unknown as T;
     }
     
     // If no match, simulate API error
@@ -51,24 +57,22 @@ export async function fetchFellowships(): Promise<Fellowship[]> {
     console.log('Fetching fellowships from CMS');
     const data = await fetchFromAPI<Fellowship[]>('/fellowships');
     console.log('Fetched fellowships:', data);
-    return data;
+    return data || []; // Return empty array if no data
   } catch (error) {
     console.error('Failed to fetch fellowships:', error);
-    // In a production app, you might want to show an error to the user instead
-    return [];
+    throw error; // Let the component handle the error
   }
 }
 
 export async function fetchFellowshipById(id: number): Promise<Fellowship | null> {
   try {
     console.log(`Fetching fellowship with ID ${id} from CMS`);
-    const data = await fetchFromAPI<Fellowship>(`/fellowships/${id}`);
+    const data = await fetchFromAPI<Fellowship | null>(`/fellowships/${id}`);
     console.log('Fetched fellowship:', data);
-    return data;
+    return data; // Return null if fellowship not found
   } catch (error) {
     console.error(`Failed to fetch fellowship with ID ${id}:`, error);
-    // In a production app, you might want to show an error to the user instead
-    return null;
+    throw error; // Let the component handle the error
   }
 }
 
@@ -77,11 +81,10 @@ export async function fetchActivities(): Promise<Activity[]> {
     console.log('Fetching activities from CMS');
     const data = await fetchFromAPI<Activity[]>('/activities');
     console.log('Fetched activities:', data);
-    return data;
+    return data || []; // Return empty array if no data
   } catch (error) {
     console.error('Failed to fetch activities:', error);
-    // In a production app, you might want to show an error to the user instead
-    return [];
+    throw error; // Let the component handle the error
   }
 }
 
@@ -90,10 +93,9 @@ export async function fetchPodcasts(): Promise<Podcast[]> {
     console.log('Fetching podcasts from CMS');
     const data = await fetchFromAPI<Podcast[]>('/podcasts');
     console.log('Fetched podcasts:', data);
-    return data;
+    return data || []; // Return empty array if no data
   } catch (error) {
     console.error('Failed to fetch podcasts:', error);
-    // In a production app, you might want to show an error to the user instead
-    return [];
+    throw error; // Let the component handle the error
   }
 }

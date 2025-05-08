@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
@@ -17,10 +18,10 @@ const Fellowship = () => {
         const data = await fetchFellowships();
         console.log('Fellowship page received data:', data);
         
-        if (data && data.length > 0) {
-          setFellowships(data);
-          setError(null);
-        } else {
+        setFellowships(data);
+        setError(null);
+        
+        if (data.length === 0) {
           setError('No fellowships found. Please check the CMS content.');
         }
       } catch (err) {
@@ -141,7 +142,7 @@ const Fellowship = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-lg text-gray-400">No fellowships available at the moment.</p>
+            <p className="text-lg text-gray-400">No fellowships available. Add content through the CMS.</p>
           </div>
         )}
       </div>

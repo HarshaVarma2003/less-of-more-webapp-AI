@@ -28,7 +28,7 @@ const FellowshipDetail = () => {
           setFellowship(data);
           setError(null);
         } else {
-          setError('Fellowship not found.');
+          setError('Fellowship not found. Please check the CMS content.');
         }
       } catch (err) {
         setError('Failed to load fellowship details. Please try again later.');
