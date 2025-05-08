@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
-import { Podcast } from '../types/admin';
+import type { Podcast } from '../types/admin';
 import { fetchPodcasts } from '../utils/apiUtils';
 
 const Podcasts = () => {
@@ -16,6 +16,7 @@ const Podcasts = () => {
       try {
         setLoading(true);
         const data = await fetchPodcasts();
+        console.log('Podcasts page received data:', data);
         setPodcasts(data);
         setError(null);
       } catch (err) {

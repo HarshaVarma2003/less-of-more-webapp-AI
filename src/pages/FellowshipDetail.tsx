@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import { Fellowship } from '../types/admin';
+import type { Fellowship } from '../types/admin';
 import { fetchFellowshipById } from '../utils/apiUtils';
 
 const FellowshipDetail = () => {
@@ -18,6 +18,7 @@ const FellowshipDetail = () => {
       try {
         setLoading(true);
         const data = await fetchFellowshipById(Number(id));
+        console.log('FellowshipDetail page received data:', data);
         if (data) {
           setFellowship(data);
           setError(null);

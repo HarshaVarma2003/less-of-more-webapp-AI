@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-import { Fellowship } from '../types/admin';
+import type { Fellowship as FellowshipType } from '../types/admin';
 import { fetchFellowships } from '../utils/apiUtils';
 
 const Fellowship = () => {
-  const [fellowships, setFellowships] = useState<Fellowship[]>([]);
+  const [fellowships, setFellowships] = useState<FellowshipType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,6 +16,7 @@ const Fellowship = () => {
       try {
         setLoading(true);
         const data = await fetchFellowships();
+        console.log('Fellowship page received data:', data);
         setFellowships(data);
         setError(null);
       } catch (err) {

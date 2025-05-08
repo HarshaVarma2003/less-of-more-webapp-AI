@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
-import { Activity } from '../types/admin';
+import type { Activity } from '../types/admin';
 import { fetchActivities } from '../utils/apiUtils';
 
 const Activities = () => {
@@ -16,6 +16,7 @@ const Activities = () => {
       try {
         setLoading(true);
         const data = await fetchActivities();
+        console.log('Activities page received data:', data);
         setActivities(data);
         setError(null);
       } catch (err) {
