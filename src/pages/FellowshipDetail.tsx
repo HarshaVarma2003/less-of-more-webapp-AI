@@ -2,79 +2,37 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-
-interface Fellowship {
-  id: number;
-  title: string;
-  organization: string;
-  about: string;
-  responsibilities: string;
-  eligibility: string;
-  image: string;
-  stipend: string;
-  duration: string;
-  location: string;
-  website: string;
-}
-
-// Fallback fellowship data in case localStorage is empty or fellowship not found
-const fallbackFellowship = {
-  id: 1,
-  title: "Digital Marketing Fellowship",
-  organization: "DigiLearn Academy",
-  about: "A comprehensive fellowship program focused on digital marketing strategies and implementation.",
-  responsibilities: "Create marketing campaigns, analyze data, develop social media strategies.",
-  eligibility: "Bachelor's degree in Marketing or related field. Experience with digital tools.",
-  image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-  stipend: "₹25,000/month",
-  duration: "12 months",
-  location: "Remote",
-  website: "https://digilearn-academy.example.com"
-};
+import { Fellowship } from '../types/admin';
+import { fetchFellowshipById } from '../utils/apiUtils';
 
 const FellowshipDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [fellowship, setFellowship] = useState<Fellowship | null>(null);
   const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Force refresh to ensure data is loaded
   useEffect(() => {
-    const fetchFellowship = () => {
-      setLoading(true);
+    const getFellowship = async () => {
+      if (!id) return;
       
       try {
-        // Add a small delay to ensure localStorage is checked after any updates
-        setTimeout(() => {
-          const savedFellowships = localStorage.getItem('lom_fellowships');
-          
-          if (savedFellowships) {
-            const parsedFellowships: Fellowship[] = JSON.parse(savedFellowships);
-            const foundFellowship = parsedFellowships.find(f => f.id === Number(id));
-            
-            if (foundFellowship) {
-              setFellowship(foundFellowship);
-            } else {
-              setNotFound(true);
-            }
-          } else {
-            // If no fellowships in localStorage, check if the id matches our fallback
-            if (Number(id) === fallbackFellowship.id) {
-              setFellowship(fallbackFellowship);
-            } else {
-              setNotFound(true);
-            }
-          }
-          setLoading(false);
-        }, 100);
-      } catch (error) {
-        console.error("Error loading fellowship data:", error);
-        setNotFound(true);
+        setLoading(true);
+        const data = await fetchFellowshipById(Number(id));
+        if (data) {
+          setFellowship(data);
+          setError(null);
+        } else {
+          setError('Fellowship not found.');
+        }
+      } catch (err) {
+        setError('Failed to load fellowship details. Please try again later.');
+        console.error('Error loading fellowship:', err);
+      } finally {
         setLoading(false);
       }
     };
     
-    fetchFellowship();
+    getFellowship();
   }, [id]);
 
   if (loading) {
@@ -96,11 +54,11 @@ const FellowshipDetail = () => {
     );
   }
 
-  if (notFound) {
+  if (error) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-3xl font-bold mb-4">Fellowship Not Found</h1>
+          <h1 className="text-3xl font-bold mb-4">{error}</h1>
           <p className="text-gray-400 mb-6">
             The fellowship you're looking for doesn't exist or has been removed.
           </p>

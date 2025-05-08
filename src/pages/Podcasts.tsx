@@ -1,74 +1,32 @@
 
 import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
-
-interface Podcast {
-  id: number;
-  title: string;
-  description: string;
-  thumbnail: string;
-  youtubeUrl: string;
-}
-
-// Fallback podcasts data in case localStorage is empty
-const fallbackPodcasts = [
-  {
-    id: 1,
-    title: "Building a Growth Mindset",
-    description: "Exploring strategies to develop a growth mindset for personal and professional development.",
-    thumbnail: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID1"
-  },
-  {
-    id: 2,
-    title: "The Art of Effective Communication",
-    description: "Understanding communication patterns that strengthen relationships and leadership.",
-    thumbnail: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID2"
-  },
-  {
-    id: 3,
-    title: "Mindfulness in Daily Life",
-    description: "Practical techniques to incorporate mindfulness into your everyday routine.",
-    thumbnail: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID3"
-  },
-  {
-    id: 4,
-    title: "Financial Independence",
-    description: "Steps to achieve financial freedom and security in uncertain times.",
-    thumbnail: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=740",
-    youtubeUrl: "https://youtube.com/watch?v=videoID4"
-  }
-];
+import { Podcast } from '../types/admin';
+import { fetchPodcasts } from '../utils/apiUtils';
 
 const Podcasts = () => {
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [selectedPodcast, setSelectedPodcast] = useState<Podcast | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load podcasts from localStorage when component mounts
+  // Load podcasts from API when component mounts
   useEffect(() => {
-    // Small delay to ensure localStorage is checked after any potential updates
-    const timer = setTimeout(() => {
+    const getPodcasts = async () => {
       try {
-        const savedPodcasts = localStorage.getItem('lom_podcasts');
-        if (savedPodcasts) {
-          setPodcasts(JSON.parse(savedPodcasts));
-        } else {
-          // If no data in localStorage, use fallback and save it
-          setPodcasts(fallbackPodcasts);
-          localStorage.setItem('lom_podcasts', JSON.stringify(fallbackPodcasts));
-        }
-      } catch (error) {
-        console.error("Error loading podcasts:", error);
-        setPodcasts(fallbackPodcasts);
+        setLoading(true);
+        const data = await fetchPodcasts();
+        setPodcasts(data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load podcasts. Please try again later.');
+        console.error('Error loading podcasts:', err);
       } finally {
         setLoading(false);
       }
-    }, 100);
+    };
     
-    return () => clearTimeout(timer);
+    getPodcasts();
   }, []);
 
   const formatYouTubeEmbedUrl = (url: string) => {
@@ -109,6 +67,27 @@ const Podcasts = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="text-red-500">Error</span> Loading Podcasts
+            </h1>
+            <p className="text-lg text-gray-400 mb-8">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-lom-yellow text-lom-dark font-medium rounded-md hover:bg-opacity-90 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </Layout>

@@ -2,91 +2,31 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
-
-interface Fellowship {
-  id: number;
-  title: string;
-  organization: string;
-  about: string;
-  responsibilities: string;
-  eligibility: string;
-  image: string;
-  stipend: string;
-  duration: string;
-  location: string;
-  website: string;
-}
-
-// Fallback fellowships data in case localStorage is empty
-const fallbackFellowships = [
-  {
-    id: 1,
-    title: "Digital Marketing Fellowship",
-    organization: "DigiLearn Academy",
-    about: "A comprehensive fellowship program focused on digital marketing strategies and implementation.",
-    responsibilities: "Create marketing campaigns, analyze data, develop social media strategies.",
-    eligibility: "Bachelor's degree in Marketing or related field. Experience with digital tools.",
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹25,000/month",
-    duration: "12 months",
-    location: "Remote",
-    website: "https://digilearn-academy.example.com"
-  },
-  {
-    id: 2,
-    title: "Data Science Fellowship",
-    organization: "TechMinds Institute",
-    about: "An intensive fellowship program focused on data science and machine learning.",
-    responsibilities: "Analyze large datasets, build predictive models, present insights to stakeholders.",
-    eligibility: "Master's degree in Statistics, Computer Science or related field. Experience with Python and R.",
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹30,000/month",
-    duration: "24 months",
-    location: "Bangalore",
-    website: "https://techminds-institute.example.com"
-  },
-  {
-    id: 3,
-    title: "Content Creation Fellowship",
-    organization: "Creative Hub",
-    about: "A fellowship program designed to nurture content creators across different mediums.",
-    responsibilities: "Create engaging content, collaborate with team members, meet content deadlines.",
-    eligibility: "Portfolio of creative work. Knowledge of content creation tools.",
-    image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹20,000/month",
-    duration: "6 months",
-    location: "Hybrid",
-    website: "https://creative-hub.example.com"
-  }
-];
+import { Fellowship } from '../types/admin';
+import { fetchFellowships } from '../utils/apiUtils';
 
 const Fellowship = () => {
   const [fellowships, setFellowships] = useState<Fellowship[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load fellowships from localStorage when component mounts
+  // Fetch fellowships from API when component mounts
   useEffect(() => {
-    // Small delay to ensure localStorage is checked after any potential updates
-    const timer = setTimeout(() => {
+    const getFellowships = async () => {
       try {
-        const savedFellowships = localStorage.getItem('lom_fellowships');
-        if (savedFellowships) {
-          const parsed = JSON.parse(savedFellowships);
-          setFellowships(parsed);
-        } else {
-          setFellowships(fallbackFellowships);
-          // Store fallback data in localStorage for future use
-          localStorage.setItem('lom_fellowships', JSON.stringify(fallbackFellowships));
-        }
-      } catch (error) {
-        console.error("Error loading fellowships:", error);
-        setFellowships(fallbackFellowships);
+        setLoading(true);
+        const data = await fetchFellowships();
+        setFellowships(data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load fellowships. Please try again later.');
+        console.error('Error loading fellowships:', err);
       } finally {
         setLoading(false);
       }
-    }, 100);
+    };
     
-    return () => clearTimeout(timer);
+    getFellowships();
   }, []);
 
   if (loading) {
@@ -110,6 +50,27 @@ const Fellowship = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="text-red-500">Error</span> Loading Fellowships
+            </h1>
+            <p className="text-lg text-gray-400 mb-8">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-lom-yellow text-lom-dark font-medium rounded-md hover:bg-opacity-90 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </Layout>

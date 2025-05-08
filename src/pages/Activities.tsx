@@ -1,103 +1,32 @@
 
-import Layout from '../components/layout/Layout';
 import { useState, useEffect } from 'react';
-
-interface Activity {
-  id: number;
-  title: string;
-  image: string;
-  url: string;
-}
-
-// Sample fallback activities data in case localStorage is empty
-const fallbackActivities = [
-  {
-    id: 1,
-    title: "Morning Meditation",
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/meditation"
-  },
-  {
-    id: 2,
-    title: "Book Club Discussions",
-    image: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/bookclub"
-  },
-  {
-    id: 3,
-    title: "Urban Sketching",
-    image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/sketching"
-  },
-  {
-    id: 4,
-    title: "Nature Photography",
-    image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/photography"
-  },
-  {
-    id: 5,
-    title: "Cooking Class",
-    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/cooking"
-  },
-  {
-    id: 6,
-    title: "Volunteering Initiative",
-    image: "https://images.unsplash.com/photo-721322800607-8c38375eef04?auto=format&fit=crop&q=80&w=740",
-    url: "https://example.com/volunteering"
-  }
-];
+import Layout from '../components/layout/Layout';
+import { Activity } from '../types/admin';
+import { fetchActivities } from '../utils/apiUtils';
 
 const Activities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load activities from localStorage when component mounts
+  // Load activities from API when component mounts
   useEffect(() => {
-    const loadData = () => {
+    const getActivities = async () => {
       try {
-        console.log("Attempting to load activities from localStorage");
-        const savedActivities = localStorage.getItem('lom_activities');
-        console.log("Raw localStorage data:", savedActivities);
-        
-        if (savedActivities && savedActivities !== "undefined") {
-          const parsedData = JSON.parse(savedActivities);
-          console.log("Parsed activities data:", parsedData);
-          setActivities(parsedData);
-        } else {
-          console.log("No activities found in localStorage, using fallback data");
-          setActivities(fallbackActivities);
-          // Store fallback data in localStorage for future use
-          localStorage.setItem('lom_activities', JSON.stringify(fallbackActivities));
-        }
-      } catch (error) {
-        console.error("Error loading activities:", error);
-        setActivities(fallbackActivities);
-        // Store fallback data in localStorage for future use after error
-        localStorage.setItem('lom_activities', JSON.stringify(fallbackActivities));
+        setLoading(true);
+        const data = await fetchActivities();
+        setActivities(data);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load activities. Please try again later.');
+        console.error('Error loading activities:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    // Initial load
-    loadData();
-
-    // Set up storage event listener to catch changes
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'lom_activities') {
-        console.log("localStorage change detected for activities");
-        loadData();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    getActivities();
   }, []);
 
   const openActivity = (activity: Activity) => {
@@ -123,6 +52,27 @@ const Activities = () => {
                 <div className="aspect-square bg-gray-800 rounded-lg"></div>
               </div>
             ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="text-red-500">Error</span> Loading Activities
+            </h1>
+            <p className="text-lg text-gray-400 mb-8">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-lom-yellow text-lom-dark font-medium rounded-md hover:bg-opacity-90 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </Layout>
