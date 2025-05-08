@@ -13,12 +13,17 @@ const FellowshipDetail = () => {
 
   useEffect(() => {
     const getFellowship = async () => {
-      if (!id) return;
+      if (!id) {
+        setError('Invalid fellowship ID');
+        setLoading(false);
+        return;
+      }
       
       try {
         setLoading(true);
         const data = await fetchFellowshipById(Number(id));
         console.log('FellowshipDetail page received data:', data);
+        
         if (data) {
           setFellowship(data);
           setError(null);

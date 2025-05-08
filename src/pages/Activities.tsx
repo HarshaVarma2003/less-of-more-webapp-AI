@@ -17,8 +17,13 @@ const Activities = () => {
         setLoading(true);
         const data = await fetchActivities();
         console.log('Activities page received data:', data);
-        setActivities(data);
-        setError(null);
+        
+        if (data && data.length > 0) {
+          setActivities(data);
+          setError(null);
+        } else {
+          setError('No activities found. Please check the CMS content.');
+        }
       } catch (err) {
         setError('Failed to load activities. Please try again later.');
         console.error('Error loading activities:', err);

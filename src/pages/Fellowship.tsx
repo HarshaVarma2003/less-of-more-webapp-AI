@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
@@ -17,8 +16,13 @@ const Fellowship = () => {
         setLoading(true);
         const data = await fetchFellowships();
         console.log('Fellowship page received data:', data);
-        setFellowships(data);
-        setError(null);
+        
+        if (data && data.length > 0) {
+          setFellowships(data);
+          setError(null);
+        } else {
+          setError('No fellowships found. Please check the CMS content.');
+        }
       } catch (err) {
         setError('Failed to load fellowships. Please try again later.');
         console.error('Error loading fellowships:', err);
@@ -90,50 +94,56 @@ const Fellowship = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {fellowships.map((fellowship) => (
-            <Link 
-              to={`/fellowship/${fellowship.id}`} 
-              key={fellowship.id} 
-              className="bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <div className="relative h-48">
-                <img 
-                  src={fellowship.image} 
-                  alt={fellowship.title} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent p-4">
-                  <h3 className="text-xl font-bold">{fellowship.title}</h3>
-                  <p className="text-sm text-gray-300">{fellowship.organization}</p>
-                </div>
-              </div>
-              
-              <div className="p-5 space-y-4">
-                <p className="text-gray-400 line-clamp-2">{fellowship.about}</p>
-                
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="block text-gray-500">Duration</span>
-                    <span>{fellowship.duration}</span>
-                  </div>
-                  <div>
-                    <span className="block text-gray-500">Location</span>
-                    <span>{fellowship.location}</span>
-                  </div>
-                  <div>
-                    <span className="block text-gray-500">Stipend</span>
-                    <span>{fellowship.stipend}</span>
+        {fellowships.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {fellowships.map((fellowship) => (
+              <Link 
+                to={`/fellowship/${fellowship.id}`} 
+                key={fellowship.id} 
+                className="bg-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <div className="relative h-48">
+                  <img 
+                    src={fellowship.image} 
+                    alt={fellowship.title} 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent p-4">
+                    <h3 className="text-xl font-bold">{fellowship.title}</h3>
+                    <p className="text-sm text-gray-300">{fellowship.organization}</p>
                   </div>
                 </div>
                 
-                <button className="w-full mt-4 bg-lom-yellow text-lom-dark font-medium py-2 rounded-md hover:bg-opacity-90 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </Link>
-          ))}
-        </div>
+                <div className="p-5 space-y-4">
+                  <p className="text-gray-400 line-clamp-2">{fellowship.about}</p>
+                  
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="block text-gray-500">Duration</span>
+                      <span>{fellowship.duration}</span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-500">Location</span>
+                      <span>{fellowship.location}</span>
+                    </div>
+                    <div>
+                      <span className="block text-gray-500">Stipend</span>
+                      <span>{fellowship.stipend}</span>
+                    </div>
+                  </div>
+                  
+                  <button className="w-full mt-4 bg-lom-yellow text-lom-dark font-medium py-2 rounded-md hover:bg-opacity-90 transition-colors">
+                    View Details
+                  </button>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-lg text-gray-400">No fellowships available at the moment.</p>
+          </div>
+        )}
       </div>
     </Layout>
   );

@@ -17,8 +17,13 @@ const Podcasts = () => {
         setLoading(true);
         const data = await fetchPodcasts();
         console.log('Podcasts page received data:', data);
-        setPodcasts(data);
-        setError(null);
+        
+        if (data && data.length > 0) {
+          setPodcasts(data);
+          setError(null);
+        } else {
+          setError('No podcasts found. Please check the CMS content.');
+        }
       } catch (err) {
         setError('Failed to load podcasts. Please try again later.');
         console.error('Error loading podcasts:', err);
