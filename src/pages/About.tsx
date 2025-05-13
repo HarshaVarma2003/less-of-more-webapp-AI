@@ -5,32 +5,32 @@ const jigneshImage = "/lovable-uploads/d8de94aa-94dc-4e22-af49-0906817040fa.png"
 
 // Sample team members data
 const teamMembers = [{
-  name: "Rahul Sharma",
-  role: "Creative Director",
+  name: "Murali Talasila",
+  role: "Co-host, Founder",
   image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }, {
-  name: "Priya Patel",
-  role: "Content Strategist",
+  name: "Jignesh Talasila",
+  role: "Co-host, Founder",
   image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }, {
-  name: "Vikram Singh",
-  role: "Fellowship Coordinator",
+  name: "Sumanth MSV",
+  role: "Chief Editor, Founder",
   image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }, {
-  name: "Nisha Gupta",
-  role: "Podcast Producer",
+  name: "Dheeraj T",
+  role: "Content Writer, Strategist",
   image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }, {
-  name: "Aditya Reddy",
-  role: "Community Manager",
+  name: "Harsha Varma",
+  role: "Content Writer, Strategist",
   image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }, {
-  name: "Kiran Desai",
-  role: "Visual Designer",
+  name: "Muzeer",
+  role: "Main Video Editor",
   image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }, {
-  name: "Raj Malhotra",
-  role: "Research Associate",
+  name: "Rufus",
+  role: "Video Editor",
   image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=300&h=300"
 }];
 const About = () => {
