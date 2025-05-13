@@ -5,16 +5,16 @@ import { Fellowship, Activity, Podcast } from '../types/admin';
 export const initialFellowships: Fellowship[] = [
   {
     id: 1,
-    title: "Digital Marketing Fellowship",
-    organization: "DigiLearn Academy",
-    about: "A comprehensive fellowship program focused on digital marketing strategies and implementation.",
-    responsibilities: "Create marketing campaigns, analyze data, develop social media strategies.",
-    eligibility: "Bachelor's degree in Marketing or related field. Experience with digital tools.",
+    title: "Teach for India Fellowship",
+    organization: "Teach For All network",
+    about: "Teach for India Fellowship is an opportunity offered to young graduates of universities and workplaces to serve as full-time teachers to children belonging to underserved communities. Under this fellowship, the selected fellows will explore the leadership knowledge, skills and mindset required in the movement for educational equity",
+    responsibilities: "Fellows are placed in classrooms for grades 1–10 and teach 40–80 students. They may be class teachers, teaching all subjects, or subject teachers and also Fellows are expected to lead students in their classrooms toward academic achievement that defies traditional expectations. They are also assigned to teach academics, values, and mindsets and to give their students the access and exposure they need to reach their personal, long-term growth and vision. daily 5-6 hrs approx work time",
+    eligibility: "Indian citizen or Overseas Citizen of India, completed your bachelor's degree or final year, applying for the first time.",
     image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=740",
-    stipend: "₹25,000/month",
-    duration: "12 months",
-    location: "Remote",
-    website: "https://digilearn-academy.example.com"
+    stipend: "Rs.23,000/month and allowances upto 5-10k based on area of work and other allowances and insurances,",
+    duration: "2 Years",
+    location: "Across India",
+    website: "https://apply.teachforindia.org/form"
   },
   {
     id: 2,
