@@ -35,7 +35,7 @@ export const initialPodcasts: Podcast[] = [
     id: 1,
     title: "Telugu AdTech Boys: How AdOnMo Built a ₹1000 Cr startup from Hyderabad",
     description: "Telugu AdTech Boys: How AdOnMo Built a ₹1000 Cr startup from Hyderabad | Taxis to Apartments | HRS29",
-    thumbnail: "https://youtu.be/EXbBUAMrTEU?si=F0nCT7cIAeS9gB-d",
+    thumbnail: "https://i.ytimg.com/an_webp/EXbBUAMrTEU/mqdefault_6s.webp?du=3000&sqp=COGMjcEG&rs=AOn4CLABerjnx39f9UXPzfBvboP2WBBk7Q",
     youtubeUrl: "https://youtu.be/EXbBUAMrTEU?si=F0nCT7cIAeS9gB-d"
   },
  
