@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import type { Activity } from '../types/admin';
@@ -11,7 +10,7 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load activities from localStorage when component mounts
+  // Load activities from static data when component mounts
   useEffect(() => {
     const getActivities = async () => {
       try {
@@ -21,10 +20,6 @@ const Activities = () => {
         
         setActivities(data);
         setError(null);
-        
-        if (data.length === 0) {
-          setError('No activities found. Please check the CMS content.');
-        }
       } catch (err) {
         setError('Failed to load activities. Please try again later.');
         console.error('Error loading activities:', err);
@@ -126,7 +121,7 @@ const Activities = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-lg text-gray-400">No activities available. Add content through the CMS.</p>
+            <p className="text-lg text-gray-400">No activities available. Please update the initialData.ts file.</p>
           </div>
         )}
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
@@ -11,7 +10,7 @@ const Fellowship = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch fellowships from localStorage when component mounts
+  // Fetch fellowships from static data when component mounts
   useEffect(() => {
     const getFellowships = async () => {
       try {
@@ -21,10 +20,6 @@ const Fellowship = () => {
         
         setFellowships(data);
         setError(null);
-        
-        if (data.length === 0) {
-          setError('No fellowships found. Please check the CMS content.');
-        }
       } catch (err) {
         setError('Failed to load fellowships. Please try again later.');
         console.error('Error loading fellowships:', err);
@@ -148,7 +143,7 @@ const Fellowship = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-lg text-gray-400">No fellowships available. Add content through the CMS.</p>
+            <p className="text-lg text-gray-400">No fellowships available. Please update the initialData.ts file.</p>
           </div>
         )}
       </div>

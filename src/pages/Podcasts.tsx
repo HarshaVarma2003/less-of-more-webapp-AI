@@ -10,7 +10,7 @@ const Podcasts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load podcasts from localStorage when component mounts
+  // Load podcasts from static data when component mounts
   useEffect(() => {
     const getPodcasts = async () => {
       try {
@@ -20,10 +20,6 @@ const Podcasts = () => {
         
         setPodcasts(data);
         setError(null);
-        
-        if (data.length === 0) {
-          setError('No podcasts found. Please check the CMS content.');
-        }
       } catch (err) {
         setError('Failed to load podcasts. Please try again later.');
         console.error('Error loading podcasts:', err);
@@ -146,7 +142,7 @@ const Podcasts = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-lg text-gray-400">No podcasts available. Add content through the CMS.</p>
+            <p className="text-lg text-gray-400">No podcasts available. Please update the initialData.ts file.</p>
           </div>
         )}
 
