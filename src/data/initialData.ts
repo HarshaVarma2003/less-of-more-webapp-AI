@@ -23,7 +23,7 @@ export const initialActivities: Activity[] = [
   {
     id: 1,
     title: "Trash to Toy",
-    image: "https://youtube.com/shorts/TZbjyhPxZa8?si=hRaQvR5_oHzW8kBz",
+    image: "https://drive.google.com/file/d/1pQroygQfk65QGzc-_bT3jWgh_stqUmSB/view?usp=sharing",
     url: "https://youtube.com/shorts/TZbjyhPxZa8?si=hRaQvR5_oHzW8kBz"
   },
  ,
